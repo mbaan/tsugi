@@ -1,17 +1,25 @@
 <div class="tuning">
+  <div class="tune-head">
+    <span class="tune-kicker">調整 · Tuning</span>
+    {% if seeds or tropes or seed_all %}
+    <button class="tune-reset" hx-post="/tuning/reset"
+            title="Clear every seed and trope">⟲ Reset all</button>
+    {% endif %}
+  </div>
+
   <div class="tune-row">
     <span class="tuning-label"><i>種</i>Seeds</span>
     {% if seed_all %}
-    <span class="chip seed">★ Using all {{ read_count }} Read title{{ '' if read_count == 1 else 's' }} as seeds
+    <span class="chip seed all">★ All {{ read_count }} Read title{{ '' if read_count == 1 else 's' }}
       <button hx-post="/tuning/seed-all" title="Stop using all Read as seeds">✕</button></span>
     {% else %}
     {% for s in seeds %}
     <span class="chip seed">★ {{ s.canonical_title }}
-      {%- if s.pull is not none %} <small class="pull">{{ '%+.2f'|format(s.pull) }}</small>{% endif %}
+      {%- if s.pull is not none %}<small class="pull">{{ '%+.1f'|format(s.pull) }}</small>{% endif %}
       <button hx-post="/seeds/{{ s.id }}" title="Remove seed">✕</button></span>
     {% endfor %}
     <button class="chip add" onclick="document.querySelector('.nav-search input').focus()"
-            title="Search a title above to add it as a seed">+ add seed</button>
+            title="Search a title above to add it as a seed">+ add</button>
     <button class="chip add" hx-post="/tuning/seed-all"
             title="Use every Read title as a seed instead of hand-picked ones">⇄ all read</button>
     {% endif %}
@@ -19,7 +27,7 @@
 
   {% if not seed_all and (suggestions.seed or suggestions.anti) %}
   <div class="tune-row suggest">
-    <span class="tuning-label sub"><i>★</i>Rated picks</span>
+    <span class="tuning-label sub"><i>★</i>Picks</span>
     {% for c in suggestions.seed %}
     <button class="chip pick" hx-post="/seeds/{{ c.id }}"
             title="Rated ★{{ '%.1f'|format(c.overall / 2) }} — one click to add as seed">
@@ -43,5 +51,7 @@
     <button class="chip add" hx-get="/tropes/picker" hx-target="#overlay">+ trope</button>
   </div>
 
-  <span class="hint tune-hint">Seeds steer your recommendations — ★ any title to add it.</span>
+  {% if not seeds and not seed_all %}
+  <span class="hint tune-hint">★ any title to add a seed — seeds steer your recommendations.</span>
+  {% endif %}
 </div>

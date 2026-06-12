@@ -131,17 +131,9 @@ async def recommendations(request: Request, sort: str = "match", type: str = "",
         mq = None
     results, skipped = recommend(conn, sort=sort, work_type=type or None, min_quality=mq,
                                  with_skipped=True)
-    links: dict[int, list] = {}
-    if results:
-        ids = ",".join("?" * len(results))
-        for row in conn.execute(
-            f"SELECT work_id, site, url FROM work_links WHERE work_id IN ({ids})",
-            [r.work_id for r in results],
-        ):
-            links.setdefault(row["work_id"], []).append(row)
     return templates.TemplateResponse(
         request, "partials/_grid.html",
-        {"results": results, "links": links, "skipped": skipped,
+        {"results": results, "skipped": skipped,
          "gate": mq if mq is not None else db.get_float(conn, "quality_gate")}
     )
 
@@ -298,6 +290,17 @@ async def toggle_seed_all(request: Request):
     conn = request.app.state.catalog
     on = db.get_setting(conn, "seed_all_read") == "1"
     db.set_setting(conn, "seed_all_read", "0" if on else "1")
+    return changed()
+
+
+@router.post("/tuning/reset")
+async def reset_tuning(request: Request):
+    """Clear every steering signal: hand-picked seeds, all-read mode, and tropes."""
+    conn = request.app.state.catalog
+    conn.execute("DELETE FROM seeds")
+    conn.execute("DELETE FROM trope_weights")
+    db.set_setting(conn, "seed_all_read", "0")
+    conn.commit()
     return changed()
 
 

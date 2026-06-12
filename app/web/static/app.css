@@ -200,6 +200,17 @@ button.link:hover { text-decoration: underline; }
    covers fit per row on desktop; the auto-fill grid still collapses on tablet */
 #page:has(.library) { max-width: 1500px; }
 .tuning { display: flex; flex-direction: column; gap: .5rem; padding: .8rem 0; border-bottom: 1px solid var(--border-2); }
+.tune-head { display: flex; align-items: center; justify-content: space-between; gap: .8rem; margin-bottom: .05rem; }
+.tune-kicker { font-family: var(--mono); font-size: .62rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--text-3); }
+.tune-reset {
+  display: inline-flex; align-items: center; gap: .3rem;
+  font-family: var(--mono); font-size: .64rem; font-weight: 700; letter-spacing: .04em;
+  color: var(--text-2); background: var(--surface);
+  border: 1.5px solid var(--border-2); border-radius: var(--r-sm); padding: .22rem .6rem;
+  transition: background .12s, color .12s, border-color .12s, transform .08s, box-shadow .08s;
+}
+.tune-reset:hover { color: var(--bad); border-color: var(--bad-border); background: var(--bad-bg); transform: translate(-1px, -1px); box-shadow: 2px 2px 0 var(--hard); }
+.tune-reset:active { transform: translate(1px, 1px); box-shadow: none; }
 .tune-row { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; }
 .tuning-label {
   display: inline-flex; align-items: center; gap: .35rem; min-width: 5.4rem;
@@ -217,7 +228,8 @@ button.link:hover { text-decoration: underline; }
 }
 .chip button { background: none; border: none; color: inherit; padding: 0 0 0 .2rem; font-weight: 700; }
 .chip button:hover { color: var(--accent); }
-.chip.seed { background: var(--accent-bg); color: var(--accent); border-color: var(--accent-border); font-weight: 600; }
+.chip.seed { background: var(--accent-bg); color: var(--accent); border-color: var(--accent-border); font-weight: 600; padding: .16rem .55rem; }
+.chip.seed.all { font-weight: 700; }
 .chip.require { background: var(--good-bg); color: var(--good); border-color: var(--good-border); }
 .chip.boost { background: var(--info-bg); color: var(--info); border-color: var(--info-border); }
 .chip.exclude { background: var(--bad-bg); color: var(--bad); border-color: var(--bad-border); }
@@ -256,7 +268,7 @@ button.link:hover { text-decoration: underline; }
 .gate-note { padding: .9rem 0; text-align: center; }
 
 .rec {
-  display: flex; gap: .85rem; align-items: center; position: relative;
+  display: flex; gap: .7rem; align-items: center; position: relative;
   padding: .7rem .35rem; border-bottom: 1px solid var(--border-2);
   animation: rise .34s ease both;
 }
@@ -268,53 +280,101 @@ button.link:hover { text-decoration: underline; }
 .rec:nth-of-type(even) { background-image: radial-gradient(var(--tone) .5px, transparent .9px); background-size: 6px 6px; }
 .rec:hover { background-color: color-mix(in srgb, var(--accent) 7%, transparent); }
 .rec:hover::before { transform: scaleY(1); }
+/* the whole row (rank → seals) opens the dossier; only .acts is exempt */
+.rec-open { display: flex; align-items: center; gap: .85rem; flex: 1; min-width: 0; cursor: pointer; }
 .rank {
-  flex-shrink: 0; width: 2.5rem; text-align: center;
-  font-family: var(--display); font-size: 1.45rem; line-height: 1;
+  flex-shrink: 0; width: 2.6rem; text-align: center;
+  font-family: var(--display); font-size: 1.6rem; line-height: 1;
   color: var(--text-3); font-variant-numeric: tabular-nums;
 }
 /* top three get a vermillion medal-seal */
 .rank.top {
   color: var(--on-accent); background: var(--accent);
   border: 1.5px solid var(--border); border-radius: var(--r-sm);
-  box-shadow: 2px 2px 0 var(--hard); padding: .28rem 0; font-size: 1.3rem;
+  box-shadow: 2px 2px 0 var(--hard); padding: .32rem 0; font-size: 1.45rem;
 }
 .rec .cover {
-  width: 48px; height: 67px; object-fit: cover; border-radius: var(--r-sm);
+  width: 68px; height: 96px; object-fit: cover; border-radius: var(--r-sm);
   border: 1.5px solid var(--border); box-shadow: 2px 2px 0 var(--hard);
   flex-shrink: 0; background: var(--surface-2);
 }
-.rec-body { flex: 1; min-width: 0; cursor: pointer; }
-.rec-body h3 { margin: 0; font-size: .98rem; font-weight: 700; line-height: 1.2; }
-.rec-body:hover h3 { color: var(--accent); }
-.why { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .35rem; }
+.rec-body { flex: 1; min-width: 0; }
+.rec-body h3 { margin: 0; font-size: 1.08rem; font-weight: 700; line-height: 1.18; letter-spacing: -.01em; }
+.rec-open:hover h3 { color: var(--accent); }
+.rec-body .meta { display: flex; align-items: center; flex-wrap: wrap; gap: .3rem; margin: .2rem 0 0; }
+.why { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .45rem; }
+/* evidence tags — why this scored: shared-readership counts from your seeds.
+   A hairline vermillion tick ties each back to the recommendation reasoning. */
 .why span {
+  display: inline-flex; align-items: center; gap: .32rem;
   background: var(--surface-2); color: var(--text-2);
-  border-radius: 2px; padding: .07rem .42rem; font-size: .73rem;
+  border-radius: var(--r-sm); padding: .1rem .5rem .1rem .42rem; font-size: .73rem;
   border: 1px solid var(--border-2);
 }
-.score { text-align: right; flex-shrink: 0; min-width: 3rem; }
-.score b {
-  font-family: var(--mono); font-size: 1.05rem; font-weight: 700;
-  color: var(--accent); font-variant-numeric: tabular-nums; letter-spacing: -.02em;
+.why span::before { content: ""; width: 3px; height: 3px; border-radius: 1px; background: var(--accent); flex-shrink: 0; }
+
+/* publication-status tag in the meta line — completion + chapter count when known */
+.status-tag {
+  display: inline-flex; align-items: center; gap: .28rem; flex-shrink: 0; line-height: 1;
+  font-family: var(--mono); font-size: .58rem; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; padding: .14rem .42rem; border-radius: 999px;
+  border: 1px solid var(--border-2);
 }
-.score b.quality { color: var(--warn); }
-.score span {
-  display: block; font-family: var(--mono); font-size: .58rem; font-weight: 600;
-  letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); margin-top: .05rem;
+/* the dot centres to the flex line-box, but uppercase caps ride above it — nudge up to
+   sit on the caps' optical midline */
+.status-tag::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; position: relative; top: -1px; }
+.status-tag.done { color: var(--good); background: var(--good-bg); border-color: var(--good-border); }
+.status-tag.live { color: var(--info); background: var(--info-bg); border-color: var(--info-border); }
+.status-tag.dead { color: var(--text-3); background: var(--surface-2); border-color: var(--border-2); }
+
+/* score seals — two hanko-style ink stamps. The conic arc inks up with the
+   value so the number and its gauge are one object: vermillion = match,
+   amber = quality. The faint track is a tint of the same ink. */
+.seals { display: flex; gap: .65rem; align-items: flex-start; flex-shrink: 0; }
+.seal-cell { display: flex; flex-direction: column; align-items: center; gap: .2rem; }
+.seal-cell i {
+  font-style: normal; font-family: var(--mono); font-size: .5rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--text-3);
 }
-/* vertical match gauge — a descending column of bars down the chart */
-.meter {
-  flex-shrink: 0; width: 6px; height: 48px; border-radius: 2px; position: relative; overflow: hidden;
-  border: 1.5px solid var(--border); background: var(--surface-2);
+.seal {
+  --track: color-mix(in srgb, var(--c) 15%, var(--surface-2));
+  position: relative; width: 44px; height: 44px; border-radius: 50%;
+  background: conic-gradient(var(--c) calc(var(--v, 0) * 1turn), var(--track) 0);
+  border: 1.5px solid var(--border); box-shadow: 2px 2px 0 var(--hard);
+  display: grid; place-items: center;
 }
-.meter::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
-  height: min(100%, calc(var(--m, 0) * 200%));
-  background: linear-gradient(var(--accent), color-mix(in srgb, var(--accent) 65%, #000));
+.seal::before {
+  content: ""; position: absolute; inset: 5px; border-radius: 50%;
+  background: var(--surface); box-shadow: inset 0 0 0 1px var(--border-2);
 }
-.acts { display: flex; gap: .3rem; align-items: center; flex-shrink: 0; }
-.acts .btn { padding: .25rem .6rem; font-size: .8rem; }
+.seal b {
+  position: relative; z-index: 1; font-family: var(--mono); font-weight: 700;
+  font-size: .82rem; line-height: 1; color: var(--c);
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em;
+}
+.seal.match { --c: var(--accent); }
+.seal.quality { --c: var(--warn); }
+
+/* row actions — one joined stamped bar: seed ☆ · Want · Read · Drop. Each cell
+   stays neutral until pressed, then inks to its meaning (seed→vermillion,
+   want→blue, read→green, drop→red). */
+.status-seg {
+  display: inline-flex; flex-shrink: 0;
+  border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  overflow: hidden; box-shadow: 2px 2px 0 var(--hard);
+}
+.status-seg button {
+  background: var(--surface); border: none; border-right: 1.5px solid var(--border);
+  padding: .4rem .72rem; font-weight: 600; font-size: .8rem; color: var(--text-2);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background .12s, color .12s;
+}
+.status-seg button:last-child { border-right: none; }
+.status-seg .seed-toggle { color: var(--accent); font-size: 1.05rem; line-height: 1; }
+.status-seg .seed-toggle:hover { background: var(--accent-bg); color: var(--accent); }
+.status-seg .want:hover { background: var(--info-bg); color: var(--info); }
+.status-seg .read:hover { background: var(--good-bg); color: var(--good); }
+.status-seg .drop:hover { background: var(--bad-bg); color: var(--bad); }
 details.more { position: relative; }
 details.more summary { list-style: none; cursor: pointer; color: var(--text-2); padding: .25rem .42rem; border-radius: var(--r-sm); }
 details.more summary:hover { background: var(--surface-2); }
@@ -585,7 +645,7 @@ form.inline { display: inline; }
 .rate { display: flex; flex-direction: column; gap: .22rem; font-size: .85rem; }
 .rate-kicker { font-family: var(--mono); font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); }
 .rate-row { display: flex; align-items: center; gap: .4rem; }
-.rate-row > span { width: 3.1rem; font-size: .73rem; color: var(--text-3); }
+.rate-row > span { width: 2.5rem; font-size: .73rem; color: var(--text-3); }
 .substars { margin-top: .1rem; }
 .substars summary { list-style: none; cursor: pointer; font-size: .72rem; color: var(--accent); font-weight: 600; }
 .substars summary::before { content: "+ "; }
@@ -726,8 +786,7 @@ body:has(#app-banner) .nav-search { flex: none; width: 330px; }
 @media (max-width: 560px) {
   #page { padding: .7rem .8rem 3rem; }
   .nav-cluster { gap: .4rem; }
-  .rec { gap: .6rem; padding-left: .15rem; padding-right: .15rem; }
-  .rec .acts { flex-wrap: wrap; max-width: 6.4rem; justify-content: flex-end; }
+  .rec { gap: .5rem; padding-left: .15rem; padding-right: .15rem; }
   .tuning-label { min-width: 0; }
   .banner-strip { height: 168px; }
 }
@@ -737,11 +796,18 @@ body:has(#app-banner) .nav-search { flex: none; width: 330px; }
 @media (pointer: coarse) {
   button.icon { padding: .5rem .6rem; font-size: 1.12rem; }
   .chip { padding: .3rem .8rem; }
-  .chip button { padding: .12rem .1rem .12rem .35rem; font-size: 1rem; }
+  /* seeds: only the ✕ is a tap target, so keep the chip body dense even on touch */
+  .chip.seed { padding: .2rem .55rem; }
+  .chip button { padding: .12rem .18rem .12rem .4rem; font-size: 1rem; }
   details.more summary { padding: .5rem .65rem; }
   .seg a { padding: .52rem 1.05rem; }
-  .rec .acts .btn, .wcard-acts .btn, .acts .btn { padding: .44rem .85rem; }
+  .wcard-acts .btn { padding: .44rem .85rem; }
+  .status-seg button { padding: .62rem .95rem; }
+  .status-seg .seed-toggle { font-size: 1.3rem; }
   input, select, .toolbar select, .toolbar input { padding: .46rem .6rem; }
   .stars { font-size: 1.3rem; }
   .stars.compact { font-size: 1.16rem; }
+  /* modal rating lives in the narrow 165px work-side column — keep its stars from
+     overflowing (and wrapping) at touch size; the whole row is a drag-slider anyway */
+  .rate .stars { font-size: 1.1rem; }
 }

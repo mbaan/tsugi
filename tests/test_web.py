@@ -367,7 +367,7 @@ def test_tuning_bar_renders_seeds_and_tropes(client):
     conn.commit()
     body = client.get("/tuning").text
     assert "Solo Leveling" in body and "Dungeon" in body
-    assert "Seeds steer your recommendations" in body
+    assert "Reset all" in body   # reset affordance shows once anything is active
 
 
 def test_tuning_seed_all_locks_out_manual_seeds(client):
@@ -382,7 +382,7 @@ def test_tuning_seed_all_locks_out_manual_seeds(client):
     db.set_setting(conn, "seed_all_read", "1")
     on = client.get("/tuning").text
     assert "Solo Leveling" not in on                       # manual chip locked out
-    assert "Using all 1 Read title" in on                  # status pill with count
+    assert "All 1 Read title" in on                        # status pill with count
 
 
 def test_recommendations_respects_sort_param(client):
@@ -617,7 +617,7 @@ def test_tuning_shows_suggestions_and_pull_badges(client):
     conn.execute("INSERT INTO ratings(work_id, overall) VALUES(?, 2)", (hated,))
     conn.commit()
     body = client.get("/tuning").text
-    assert "+1.25" in body                       # rated seed shows derived pull
+    assert "+1.2" in body                        # rated seed shows derived pull
     assert "LovedRead" in body and f'hx-post="/seeds/{loved}"' in body
     assert "HatedRead" in body and "chip pick anti" in body
     assert body.count('<small class="pull">') == 1  # only the rated seed gets a badge
