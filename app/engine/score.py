@@ -11,6 +11,8 @@ class Scored:
     title: str
     type: str | None
     year: int | None
+    status: str | None
+    chapters: int | None
     quality: float
     cover_url: str | None
     cover_color: str | None
@@ -208,6 +210,7 @@ def recommend(conn: sqlite3.Connection, limit: int = 50, *, sort: str = "match",
         why.append(f"quality {w['quality']:.1f}")
         results.append(Scored(
             work_id=w["id"], title=w["canonical_title"], type=w["type"], year=w["year"],
+            status=w["status"], chapters=w["chapters"],
             quality=w["quality"], cover_url=w["cover_url"], cover_color=w["cover_color"],
             first_seen_at=w["first_seen_at"], score=score, why=tuple(why),
         ))

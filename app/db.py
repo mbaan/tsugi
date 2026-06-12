@@ -217,7 +217,7 @@ MIGRATIONS: dict[str, dict[str, str]] = {
         "is_adult": "INTEGER NOT NULL DEFAULT 0",
         "norm_name": "TEXT",
     },
-    "works": {"banner_url": "TEXT", "cover_color": "TEXT"},
+    "works": {"banner_url": "TEXT", "cover_color": "TEXT", "chapters": "INTEGER"},
 }
 
 

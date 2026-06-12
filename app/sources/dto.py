@@ -46,6 +46,7 @@ class WorkPayload:
     type: str | None = None
     year: int | None = None
     status: str | None = None
+    chapters: int | None = None
     description: str | None = None
     cover_url: str | None = None
     banner_url: str | None = None

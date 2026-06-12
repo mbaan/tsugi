@@ -11,7 +11,7 @@ ORIGIN_TYPE = {"JP": "manga", "KR": "manhwa", "CN": "manhua", "TW": "manhua"}
 MEDIA_QUERY = """
 query ($id: Int, $search: String) {
   Media(id: $id, search: $search, type: MANGA) {
-    id format status countryOfOrigin startDate { year }
+    id format status chapters countryOfOrigin startDate { year }
     averageScore popularity favourites isAdult description(asHtml: false)
     title { romaji english native } synonyms siteUrl
     coverImage { large color } bannerImage
@@ -109,6 +109,7 @@ def parse_media(media: dict) -> WorkPayload:
         type=ORIGIN_TYPE.get(media.get("countryOfOrigin")),
         year=(media.get("startDate") or {}).get("year"),
         status=(media.get("status") or "").lower() or None,
+        chapters=media.get("chapters"),
         description=media.get("description"),
         cover_url=(media.get("coverImage") or {}).get("large"),
         banner_url=media.get("bannerImage"),

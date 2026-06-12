@@ -122,12 +122,13 @@ def upsert_payload(conn: sqlite3.Connection, payload: WorkPayload) -> int:
     # status/description/cover use COALESCE(?, col) — fresh payload wins.
     conn.execute(
         "UPDATE works SET canonical_title=?, type=?, year=COALESCE(year, ?),"
-        " status=COALESCE(?, status), description=COALESCE(?, description),"
+        " status=COALESCE(?, status), chapters=COALESCE(?, chapters),"
+        " description=COALESCE(?, description),"
         " cover_url=COALESCE(?, cover_url), banner_url=COALESCE(?, banner_url),"
         " cover_color=COALESCE(?, cover_color), is_adult=MAX(is_adult, ?), is_stub=0,"
         " updated_at=datetime('now') WHERE id=?",
-        (canonical, type_, payload.year, payload.status, payload.description,
-         payload.cover_url, payload.banner_url, payload.cover_color,
+        (canonical, type_, payload.year, payload.status, payload.chapters,
+         payload.description, payload.cover_url, payload.banner_url, payload.cover_color,
          int(payload.is_adult), work_id),
     )
 
