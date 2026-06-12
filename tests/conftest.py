@@ -1,3 +1,7 @@
+import os
+
+os.environ.setdefault("DISABLE_SSO", "1")
+
 import json
 from pathlib import Path
 
