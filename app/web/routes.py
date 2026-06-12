@@ -282,6 +282,15 @@ async def toggle_seed(request: Request, work_id: int):
     return changed()
 
 
+@router.post("/tuning/seed-all")
+async def toggle_seed_all(request: Request):
+    """Mutex shortcut: flip 'use every Read item as a seed' on/off."""
+    conn = request.app.state.catalog
+    on = db.get_setting(conn, "seed_all_read") == "1"
+    db.set_setting(conn, "seed_all_read", "0" if on else "1")
+    return changed()
+
+
 @router.post("/ratings/{work_id}")
 async def set_rating(request: Request, work_id: int,
                field: Annotated[str, Form()], value: Annotated[int, Form()]):

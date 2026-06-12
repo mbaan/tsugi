@@ -84,6 +84,17 @@ def test_seed_toggle(client):
     assert conn.execute("SELECT COUNT(*) c FROM seeds").fetchone()["c"] == 0
 
 
+def test_seed_all_toggle_flips_setting(client):
+    conn = client.app_ref.state.catalog
+    assert db.get_setting(conn, "seed_all_read") in (None, "0")
+    r = client.post("/tuning/seed-all")
+    assert r.status_code == 204
+    assert "data-changed" in r.headers.get("HX-Trigger", "")
+    assert db.get_setting(conn, "seed_all_read") == "1"
+    client.post("/tuning/seed-all")
+    assert db.get_setting(conn, "seed_all_read") == "0"
+
+
 def test_trope_chip_cycles_modes(client):
     conn = client.app_ref.state.catalog
     w = make_work(conn, "Alpha")
