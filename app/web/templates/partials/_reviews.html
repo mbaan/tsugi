@@ -1,0 +1,10 @@
+{% for r in reviews %}
+<div class="review">
+  <p class="meta">{{ r.reason }}</p>
+  <p>"{{ r.new_title }}" vs "{{ r.cand_title }}"</p>
+  <form hx-post="/reviews/{{ r.id }}">
+    <button class="btn" name="action" value="merge">Merge</button>
+    <button class="btn" name="action" value="keep">Keep separate</button>
+  </form>
+</div>
+{% else %}<p class="meta">None pending.</p>{% endfor %}

@@ -1,0 +1,28 @@
+<div class="slideover">
+  <header><h3>Settings</h3><button class="icon" onclick="closeOverlay()" title="Close">✕</button></header>
+  <label class="field">Theme
+    <select name="theme">
+      <option value="auto">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select></label>
+  <form hx-post="/settings">
+    <label class="field">Quality gate <input name="quality_gate" value="{{ s.quality_gate }}"></label>
+    <fieldset><legend class="hint">Scoring blend</legend>
+      <label class="field">Similarity <input name="w_similarity" value="{{ s.w_similarity }}"></label>
+      <label class="field">Tropes <input name="w_tropes" value="{{ s.w_tropes }}"></label>
+      <label class="field">Quality <input name="w_quality" value="{{ s.w_quality }}"></label>
+    </fieldset>
+    <label class="check"><input type="checkbox" name="show_adult" value="1"
+      {% if s.show_adult == '1' %}checked{% endif %}> Show adult titles</label>
+    <label class="check"><input type="checkbox" name="exclude_seed_franchise" value="1"
+      {% if s.exclude_seed_franchise == '1' %}checked{% endif %}> Hide seed franchises</label>
+    <label class="check"><input type="checkbox" name="background_refresh" value="1"
+      {% if s.background_refresh == '1' %}checked{% endif %}> Background refresh</label>
+    <button class="btn accent">Save</button>
+  </form>
+  <button class="btn" hx-get="/crawler" hx-target="#overlay" title="Crawler status, backlog, and history">
+    ⟳ Crawler activity</button>
+  <h4>Merge reviews</h4>
+  <div id="reviews" hx-get="/reviews" hx-trigger="load, data-changed from:body"></div>
+</div>

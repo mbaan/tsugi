@@ -1,0 +1,23 @@
+<div class="modal narrow picker">
+  <header><h3>Tropes</h3><button class="icon" onclick="closeOverlay()" title="Close">✕</button></header>
+  <p class="hint">Click a trope to cycle: ✓ require → ↑ boost → ✕ exclude → off.</p>
+  <input id="picker-q" name="q" placeholder="Filter tropes…" autocomplete="off"
+         hx-get="/tropes/picker" hx-target="#picker-groups" hx-select="#picker-groups"
+         hx-swap="outerHTML" hx-trigger="keyup changed delay:200ms">
+  <div id="picker-groups" hx-get="/tropes/picker" hx-select="#picker-groups" hx-swap="outerHTML"
+       hx-include="#picker-q" hx-trigger="data-changed from:body">
+    {% for category, group in groups.items() %}
+    <h4>{{ category }}</h4>
+    <div class="chips">
+      {% for t in group %}
+      <button class="chip trope {{ t.mode or '' }}" hx-post="/tropes/{{ t.id }}"
+              title="{{ t.description or '' }}">
+        {{ {'require':'✓','boost':'↑','exclude':'✕'}.get(t.mode, '') }} {{ t.name }}</button>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="meta">No tags yet — the dictionary downloads on first launch with network access,
+      and tags also appear as titles get indexed.</p>
+    {% endfor %}
+  </div>
+</div>

@@ -1,0 +1,11 @@
+.superpowers/
+data/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# local agent config + AI design docs — not shipped publicly
+.claude/
+docs/superpowers/

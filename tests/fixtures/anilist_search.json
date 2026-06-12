@@ -1,0 +1,47 @@
+{
+  "data": {
+    "Page": {
+      "media": [
+        {
+          "id": 105398,
+          "title": {
+            "english": "Solo Leveling",
+            "romaji": "Na Honjaman Level Up"
+          },
+          "startDate": {
+            "year": 2018
+          },
+          "countryOfOrigin": "KR",
+          "averageScore": 84,
+          "coverImage": {
+            "medium": "https://img.example/m1.jpg"
+          }
+        },
+        {
+          "id": 201652,
+          "title": {
+            "english": "The Privilege of the Second Life is Power Leveling",
+            "romaji": "Insaeng 2-hoechaui Teukgwoneun Pokpung Rebereop"
+          },
+          "startDate": {
+            "year": 2024
+          },
+          "countryOfOrigin": "KR",
+          "averageScore": null
+        },
+        {
+          "id": 179445,
+          "title": {
+            "english": "Solo Leveling: Ragnarok",
+            "romaji": "Na Honjaman Level Up: Ragnarok"
+          },
+          "startDate": {
+            "year": 2024
+          },
+          "countryOfOrigin": "KR",
+          "averageScore": 75
+        }
+      ]
+    }
+  }
+}

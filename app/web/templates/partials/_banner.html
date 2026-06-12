@@ -1,0 +1,11 @@
+{% if ids %}
+<div class="banner-strip kiosk" aria-hidden="true">
+  <div class="banner-row">
+    {%- for id in ids %}
+    <img src="/covers/{{ id }}" alt="" loading="lazy">
+    {%- endfor %}
+  </div>
+  <div class="kiosk-shelf"></div>
+  <div class="banner-fade"></div>
+</div>
+{%- endif %}

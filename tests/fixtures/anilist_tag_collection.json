@@ -1,0 +1,11 @@
+{
+  "data": {
+    "GenreCollection": ["Action", "Romance", "Hentai"],
+    "MediaTagCollection": [
+      {"name": "Dungeon", "description": "Partly or completely set in a dungeon.", "category": "Setting-Scene", "isAdult": false},
+      {"name": "Time Loop", "description": "Characters relive the same span of time.", "category": "Theme-Sci Fi", "isAdult": false},
+      {"name": "Vampire", "description": "Prominently features vampires.", "category": "Cast-Traits", "isAdult": false},
+      {"name": "Bondage", "description": "Features bondage.", "category": "Sexual Content", "isAdult": true}
+    ]
+  }
+}

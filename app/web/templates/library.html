@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Library — Tsugi{% endblock %}
+{% block content %}
+<section class="library">
+  <div class="toolbar">
+    <nav class="seg">
+      {% for s, label in [('read', 'Read'), ('want', 'Want'), ('discarded', 'Not for me')] %}
+      <a class="{{ 'on' if s == status }}" href="/library?status={{ s }}">
+        {{ label }} · {{ counts.get(s, 0) }}</a>
+      {% endfor %}
+    </nav>
+    <form id="lib-toolbar" hx-get="/library/grid" hx-target="#library-grid"
+          hx-trigger="change, keyup delay:300ms from:find input[name='q']">
+      <input type="hidden" name="status" value="{{ status }}">
+      <label>Sort <select name="sort">
+        <option value="added">Recently added</option>
+        <option value="title">Title</option>
+        <option value="quality">Quality</option>
+      </select></label>
+      <input name="q" placeholder="Filter this list…" autocomplete="off">
+    </form>
+  </div>
+  <div id="library-grid" hx-get="/library/grid" hx-include="#lib-toolbar"
+       hx-trigger="load, data-changed from:body"></div>
+</section>
+{% endblock %}

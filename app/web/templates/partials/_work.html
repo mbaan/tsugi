@@ -1,0 +1,102 @@
+{% from "partials/_stars.html" import stars %}
+<div class="modal work" hx-get="/works/{{ work.id }}" hx-trigger="data-changed from:body"
+     hx-swap="outerHTML">
+  {% if work.banner_url %}
+  <div class="banner" style="background-image:url(/covers/{{ work.id }}/banner)"></div>
+  {% endif %}
+  <header>
+    <h2>{{ work.canonical_title }}</h2>
+    <button class="icon" onclick="closeOverlay()" title="Close">✕</button>
+  </header>
+  <div class="work-cols">
+    <div class="work-side">
+      <img class="cover-lg" src="/covers/{{ work.id }}" alt=""
+           style="background:{{ work.cover_color or 'var(--surface-2)' }}">
+      <button class="btn accent" hx-post="/seeds/{{ work.id }}">
+        ★ {{ 'Remove seed' if is_seed else 'Add to seeds' }}</button>
+      <label class="field"><span class="hint">Add to</span>
+        <select name="status" data-work="{{ work.id }}" data-discard-dialog
+                hx-post="/list/{{ work.id }}"
+                hx-trigger="change[event.target.value != 'discarded']">
+          <option value="restore" {{ 'selected' if not list_status }}>—</option>
+          <option value="want" {{ 'selected' if list_status == 'want' }}>Want</option>
+          <option value="read" {{ 'selected' if list_status == 'read' }}>Read</option>
+          <option value="discarded" {{ 'selected' if list_status == 'discarded' }}>Not for me…</option>
+        </select>
+      </label>
+      <div class="rate">
+        <span class="rate-kicker">Your rating{% if rating %} · ★ {{ '%.1f'|format(rating.overall / 2) }}{% endif %}</span>
+        <div class="rate-row"><span>Overall</span>{{ stars(work.id, 'overall', rating.overall if rating else none, prefix='modal-') }}</div>
+        {% if rating %}
+        <div class="rate-row"><span>Art</span>{{ stars(work.id, 'art', rating.art, prefix='modal-') }}</div>
+        <div class="rate-row"><span>Story</span>{{ stars(work.id, 'story', rating.story, prefix='modal-') }}</div>
+        {% endif %}
+      </div>
+      <div class="btn-row">
+        <button class="btn" hx-post="/works/{{ work.id }}/crawl"
+                hx-include="#crawl-depth">⟳ Crawl</button>
+        <label class="hint">depth <input id="crawl-depth" name="depth" value="2"></label>
+      </div>
+    </div>
+    <div class="work-main">
+      {% if alt_titles %}<p class="meta">{{ alt_titles|join(' · ') }}</p>{% endif %}
+      <p class="meta">{{ work.type or '?' }} · {{ work.year or '?' }} · {{ work.status or '?' }} ·
+        <b>{{ '%.1f'|format(work.quality) if work.quality is not none else '–' }}</b>
+        {% if work.quality_votes %} from {{ '{:,}'.format(work.quality_votes) }} votes{% endif %}
+        {% for l in links %} · <a href="{{ l.url }}" target="_blank" rel="noopener">{{ l.site }} ↗</a>{% endfor %}</p>
+      {% if work.description %}<p class="desc">{{ work.description|striptags }}</p>{% endif %}
+      {% if tags %}
+      <h4>Tags — click to tune</h4>
+      <div class="chips">
+        {% for t in tags %}
+        <button class="chip trope {{ t.mode or '' }}" hx-post="/tropes/{{ t.id }}"
+                title="require → boost → exclude → off">
+          {{ {'require':'✓','boost':'↑','exclude':'✕'}.get(t.mode, '') }}
+          {{ t.name }} {{ '%.0f%%'|format(t.weight * 100) }}</button>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if similar %}
+      <h4>Similar — readers also recommend</h4>
+      <div class="similar">
+        {% for s in similar %}
+        {% if s.is_stub and s.source %}
+        <form class="sim" hx-post="/index" title="Not indexed yet — click to fetch it">
+          <input type="hidden" name="source" value="{{ s.source }}">
+          <input type="hidden" name="source_key" value="{{ s.source_key }}">
+          <button class="sim-add">
+            <img src="/covers/{{ s.id }}" alt="" loading="lazy">
+            <span>{{ s.canonical_title }}<br><small>+ index · {{ '{:,}'.format(s.votes) }} votes</small></span>
+          </button>
+        </form>
+        {% else %}
+        <div class="sim" {% if not s.is_stub %}hx-get="/works/{{ s.id }}" hx-target="#overlay"
+             hx-push-url="true"{% endif %}>
+          <img src="/covers/{{ s.id }}" alt="" loading="lazy"
+               style="background:{{ s.cover_color or 'var(--surface-2)' }}">
+          <span>{{ s.canonical_title }}<br><small>{{ '{:,}'.format(s.votes) }} votes</small></span>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if relations %}
+      <h4>Related</h4>
+      <ul class="relations">
+        {% for r in relations %}
+        <li>{{ r.canonical_title }} <small>{{ r.rel_type }}</small>
+          {% if r.is_stub and r.source %}
+          <form class="inline" hx-post="/index">
+            <input type="hidden" name="source" value="{{ r.source }}">
+            <input type="hidden" name="source_key" value="{{ r.source_key }}">
+            <button class="link">index it</button></form>
+          {% elif not r.is_stub %}
+          <button class="link" hx-get="/works/{{ r.id }}" hx-target="#overlay"
+                  hx-push-url="true">open</button>
+          {% endif %}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</div>

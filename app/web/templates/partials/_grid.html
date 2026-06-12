@@ -1,0 +1,48 @@
+{% if results %}
+<div class="count">{{ results|length }} recommendation{{ '' if results|length == 1 else 's' }}</div>
+{% for r in results %}
+<article class="rec">
+  <div class="rank{{ ' top' if loop.index <= 3 }}">{{ '%02d'|format(loop.index) }}</div>
+  <img class="cover" src="/covers/{{ r.work_id }}" alt="" loading="lazy"
+       style="background:{{ r.cover_color or 'var(--surface-2)' }}">
+  <div class="rec-body" hx-get="/works/{{ r.work_id }}" hx-target="#overlay" hx-push-url="true">
+    <h3>{{ r.title }}</h3>
+    <p class="meta">{{ r.type or '?' }} · {{ r.year or '?' }}</p>
+    {% if chips %}<div class="why">{% for w in r.why %}<span>{{ w }}</span>{% endfor %}</div>{% endif %}
+  </div>
+  <div class="score"><b class="quality">{{ '%.1f'|format(r.quality) }}</b><span>quality</span></div>
+  <div class="score"><b>{{ '%.2f'|format(r.score) }}</b><span>match</span></div>
+  <div class="meter" style="--m:{{ '%.3f'|format(r.score) }}" title="match {{ '%.2f'|format(r.score) }}"></div>
+  <div class="acts">
+    <button class="icon star" hx-post="/seeds/{{ r.work_id }}" title="Add to seeds">★</button>
+    <button class="btn" hx-post="/list/{{ r.work_id }}?status=want">Want</button>
+    <button class="btn" hx-post="/list/{{ r.work_id }}?status=read">Read</button>
+    <button class="icon no" hx-get="/works/{{ r.work_id }}/discard" hx-target="#overlay"
+            title="Not for me">✕</button>
+    <details class="more"><summary title="More">⋯</summary>
+      <div class="menu">
+        <form hx-post="/works/{{ r.work_id }}/crawl">
+          <label class="hint">depth <input name="depth" value="2"></label>
+          <button class="btn">Crawl from here</button></form>
+        {% for l in links.get(r.work_id, []) %}
+        <a href="{{ l.url }}" target="_blank" rel="noopener">{{ l.site }} ↗</a>
+        {% endfor %}
+      </div>
+    </details>
+  </div>
+</article>
+{% endfor %}
+{% if skipped %}
+<div class="hint gate-note">{{ skipped }} more hidden below quality {{ '%.1f'|format(gate) }} —
+  lower “Min quality” to peek at them.</div>
+{% endif %}
+{% else %}
+<div class="empty"><h3>No recommendations yet</h3>
+  {% if skipped %}
+  <p>{{ skipped }} match{{ 'es' if skipped != 1 }} scored but sit below quality
+    {{ '%.1f'|format(gate) }} — lower “Min quality” to see them.</p>
+  {% else %}
+  <p>Search a title above, index it, hit ★ to make it a seed, then crawl from its page
+    (open it → ⟳ Crawl) to pull in its neighborhood.</p>
+  {% endif %}</div>
+{% endif %}

@@ -1,0 +1,612 @@
+{
+  "data": {
+    "Media": {
+      "id": 105398,
+      "format": "MANGA",
+      "status": "FINISHED",
+      "countryOfOrigin": "KR",
+      "startDate": {
+        "year": 2018
+      },
+      "averageScore": 84,
+      "popularity": 276605,
+      "favourites": 31317,
+      "isAdult": false,
+      "description": "In a world where awakened beings called “Hunters” must battle deadly monsters to protect humanity, Seong Jin-U, nicknamed “the weakest hunter of all mankind,” finds himself in a constant struggle for survival. One day, after a brutal encounter in an overpowered dungeon wipes out his party and threatens to end his life, a mysterious System chooses him as its sole player: Jin-U has been granted the rare opportunity to level up his abilities, possibly beyond any known limits. Follow Jin-U’s journey as he takes on ever-stronger enemies, both human and monster, to discover the secrets deep within the dungeons and the ultimate extent of his powers.\n<br><br>\n(Source: Tappytoon)\n<br><br>\n<i>Note: Includes 22 extra chapters.</i>",
+      "title": {
+        "romaji": "Na Honjaman Level Up",
+        "english": "Solo Leveling",
+        "native": "나 혼자만 레벨업"
+      },
+      "synonyms": [
+        "I Level Up Alone",
+        "Only I Level Up",
+        "俺だけレベルアップな件",
+        "我獨自升級",
+        "Ore dake Level Up na Ken",
+        "Поднятие уровня в одиночку",
+        "Тільки я візьму новий рівень"
+      ],
+      "siteUrl": "https://anilist.co/manga/105398",
+      "coverImage": {
+        "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx105398-b673Vt5ZSuz3.jpg",
+        "color": "#e4a15d"
+      },
+      "bannerImage": "https://img.example/banner.jpg",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Fantasy"
+      ],
+      "tags": [
+        {
+          "name": "Dungeon",
+          "rank": 95,
+          "category": "Setting-Scene",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Male Protagonist",
+          "rank": 93,
+          "category": "Cast-Main Cast",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Super Power",
+          "rank": 92,
+          "category": "Theme-Fantasy",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "War",
+          "rank": 91,
+          "category": "Theme-Other",
+          "isMediaSpoiler": true
+        },
+        {
+          "name": "Full Color",
+          "rank": 89,
+          "category": "Technical",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Necromancy",
+          "rank": 87,
+          "category": "Theme-Fantasy",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Magic",
+          "rank": 86,
+          "category": "Theme-Fantasy",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Urban Fantasy",
+          "rank": 84,
+          "category": "Setting-Universe",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Gods",
+          "rank": 80,
+          "category": "Cast-Traits",
+          "isMediaSpoiler": true
+        },
+        {
+          "name": "Creature Taming",
+          "rank": 79,
+          "category": "Theme-Other",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Primarily Adult Cast",
+          "rank": 68,
+          "category": "Cast-Main Cast",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Long Strip",
+          "rank": 66,
+          "category": "Technical",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Politics",
+          "rank": 66,
+          "category": "Theme-Other",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Post-Apocalyptic",
+          "rank": 64,
+          "category": "Setting-Universe",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Demons",
+          "rank": 64,
+          "category": "Cast-Traits",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Video Games",
+          "rank": 62,
+          "category": "Theme-Game",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Tragedy",
+          "rank": 60,
+          "category": "Theme-Drama",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Foreign",
+          "rank": 59,
+          "category": "Setting-Scene",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Memory Manipulation",
+          "rank": 59,
+          "category": "Theme-Other",
+          "isMediaSpoiler": true
+        },
+        {
+          "name": "Anti-Hero",
+          "rank": 58,
+          "category": "Cast-Main Cast",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Time Manipulation",
+          "rank": 57,
+          "category": "Theme-Sci-Fi",
+          "isMediaSpoiler": true
+        },
+        {
+          "name": "Age Regression",
+          "rank": 56,
+          "category": "Cast-Traits",
+          "isMediaSpoiler": true
+        },
+        {
+          "name": "Heterosexual",
+          "rank": 55,
+          "category": "Theme-Romance",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Assassins",
+          "rank": 55,
+          "category": "Theme-Other-Organisations",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Chimera",
+          "rank": 53,
+          "category": "Cast-Traits",
+          "isMediaSpoiler": true
+        },
+        {
+          "name": "Estranged Family",
+          "rank": 53,
+          "category": "Cast-Main Cast",
+          "isMediaSpoiler": true
+        },
+        {
+          "name": "Bullying",
+          "rank": 50,
+          "category": "Theme-Drama",
+          "isMediaSpoiler": true
+        },
+        {
+          "name": "Language Barrier",
+          "rank": 48,
+          "category": "Theme-Other",
+          "isMediaSpoiler": true
+        },
+        {
+          "name": "Time Skip",
+          "rank": 47,
+          "category": "Setting-Time",
+          "isMediaSpoiler": true
+        },
+        {
+          "name": "Snowscape",
+          "rank": 20,
+          "category": "Setting-Scene",
+          "isMediaSpoiler": false
+        },
+        {
+          "name": "Marriage",
+          "rank": 10,
+          "category": "Theme-Other",
+          "isMediaSpoiler": false
+        }
+      ],
+      "recommendations": {
+        "nodes": [
+          {
+            "rating": 1367,
+            "mediaRecommendation": {
+              "id": 119257,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Jeonjijeok Dokja Sijeom",
+                "english": "Omniscient Reader"
+              }
+            }
+          },
+          {
+            "rating": 774,
+            "mediaRecommendation": {
+              "id": 85143,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Sinui Tap",
+                "english": "Tower of God"
+              }
+            }
+          },
+          {
+            "rating": 378,
+            "mediaRecommendation": {
+              "id": 109957,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Dubeon Saneun Ranker",
+                "english": "Second Life Ranker"
+              }
+            }
+          },
+          {
+            "rating": 277,
+            "mediaRecommendation": {
+              "id": 105393,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Gwihwanjaui Mabeobeun Teukbyeolhaeya Hamnida",
+                "english": "A Returner's Magic Should Be Special"
+              }
+            }
+          },
+          {
+            "rating": 212,
+            "mediaRecommendation": {
+              "id": 128067,
+              "type": "MANGA",
+              "title": {
+                "romaji": "SSS-geup Jugeoya Saneun Hunter",
+                "english": "SSS-Class Revival Hunter"
+              }
+            }
+          },
+          {
+            "rating": 157,
+            "mediaRecommendation": {
+              "id": 110462,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Dogul Wang",
+                "english": "Tomb Raider King"
+              }
+            }
+          },
+          {
+            "rating": 155,
+            "mediaRecommendation": {
+              "id": 110042,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Naneun Madowangida",
+                "english": "I Am the Sorcerer King"
+              }
+            }
+          },
+          {
+            "rating": 129,
+            "mediaRecommendation": {
+              "id": 117460,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Temppal",
+                "english": "Overgeared"
+              }
+            }
+          },
+          {
+            "rating": 129,
+            "mediaRecommendation": {
+              "id": 130511,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Level-Up Motaneun Player",
+                "english": "The Player Who Can't Level Up"
+              }
+            }
+          },
+          {
+            "rating": 115,
+            "mediaRecommendation": {
+              "id": 137280,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Na Honja Mallep Newbie",
+                "english": "I’m the Max-Level Newbie"
+              }
+            }
+          },
+          {
+            "rating": 110,
+            "mediaRecommendation": {
+              "id": 118424,
+              "type": "MANGA",
+              "title": {
+                "romaji": "4000 Nyeon Mane Gwihwanhan Daemadosa",
+                "english": "The Archmage Returns After 4000 Years"
+              }
+            }
+          },
+          {
+            "rating": 94,
+            "mediaRecommendation": {
+              "id": 126297,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Iphagyongbyeong",
+                "english": "Teenage Mercenary"
+              }
+            }
+          },
+          {
+            "rating": 90,
+            "mediaRecommendation": {
+              "id": 85155,
+              "type": "MANGA",
+              "title": {
+                "romaji": "The Gamer",
+                "english": "The Gamer"
+              }
+            }
+          },
+          {
+            "rating": 90,
+            "mediaRecommendation": {
+              "id": 85141,
+              "type": "MANGA",
+              "title": {
+                "romaji": "God of High School",
+                "english": "The God of High School"
+              }
+            }
+          },
+          {
+            "rating": 86,
+            "mediaRecommendation": {
+              "id": 117536,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Kill the Hero",
+                "english": "Kill the Hero"
+              }
+            }
+          },
+          {
+            "rating": 81,
+            "mediaRecommendation": {
+              "id": 85869,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Dalbitjogaksa",
+                "english": "The Legendary Moonlight Sculptor"
+              }
+            }
+          },
+          {
+            "rating": 77,
+            "mediaRecommendation": {
+              "id": 114605,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Igye Geomwang Saengjongi",
+                "english": "Latna Saga: Survival of a Sword King"
+              }
+            }
+          },
+          {
+            "rating": 75,
+            "mediaRecommendation": {
+              "id": 120980,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Nano Machine",
+                "english": "Nano Machine"
+              }
+            }
+          },
+          {
+            "rating": 74,
+            "mediaRecommendation": {
+              "id": 86707,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Yao Shen Ji",
+                "english": "Tales of Demons and Gods"
+              }
+            }
+          },
+          {
+            "rating": 67,
+            "mediaRecommendation": {
+              "id": 143056,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Jaeanggeup Yeongungnimi Gwihwanhasyeotda",
+                "english": "The Return of the Disaster-Class Hero"
+              }
+            }
+          },
+          {
+            "rating": 65,
+            "mediaRecommendation": {
+              "id": 119276,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Tutorial Tabui Goinmul",
+                "english": "The Advanced Player of the Tutorial Tower"
+              }
+            }
+          },
+          {
+            "rating": 60,
+            "mediaRecommendation": {
+              "id": 116506,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Dungeon Reset",
+                "english": "Dungeon Reset"
+              }
+            }
+          },
+          {
+            "rating": 60,
+            "mediaRecommendation": {
+              "id": 144957,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Myeolmang Ihuui Segye",
+                "english": "The World After the Fall"
+              }
+            }
+          },
+          {
+            "rating": 52,
+            "mediaRecommendation": {
+              "id": 74347,
+              "type": "MANGA",
+              "title": {
+                "romaji": "One Punch-Man",
+                "english": "One-Punch Man"
+              }
+            }
+          },
+          {
+            "rating": 34,
+            "mediaRecommendation": {
+              "id": 136220,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Tusinjeonsaenggi",
+                "english": "Doom Breaker"
+              }
+            }
+          }
+        ]
+      },
+      "relations": {
+        "edges": [
+          {
+            "relationType": "ADAPTATION",
+            "node": {
+              "id": 151807,
+              "type": "ANIME",
+              "title": {
+                "romaji": "Ore dake Level Up na Ken",
+                "english": "Solo Leveling"
+              }
+            }
+          },
+          {
+            "relationType": "ADAPTATION",
+            "node": {
+              "id": 176496,
+              "type": "ANIME",
+              "title": {
+                "romaji": "Ore dake Level Up na Ken: Season 2 - Arise from the Shadow",
+                "english": "Solo Leveling Season 2 -Arise from the Shadow-"
+              }
+            }
+          },
+          {
+            "relationType": "SEQUEL",
+            "node": {
+              "id": 179445,
+              "type": "MANGA",
+              "title": {
+                "romaji": "Na Honjaman Level Up: Ragnarok",
+                "english": "Solo Leveling: Ragnarok"
+              }
+            }
+          },
+          {
+            "relationType": "ADAPTATION",
+            "node": {
+              "id": 184694,
+              "type": "ANIME",
+              "title": {
+                "romaji": "Ore dake Level Up na Ken: ReAwakening",
+                "english": "Solo Leveling -ReAwakening-"
+              }
+            }
+          }
+        ]
+      },
+      "externalLinks": [
+        {
+          "site": "KakaoPage",
+          "url": "https://page.kakao.com/content/50866481"
+        },
+        {
+          "site": "Webnovel",
+          "url": "https://www.webnovel.com/comic/15227640605485101"
+        },
+        {
+          "site": "Tappytoon",
+          "url": "https://www.tappytoon.com/en/book/solo-leveling-official"
+        },
+        {
+          "site": "Tapas",
+          "url": "https://tapas.io/series/solo-leveling-comic/info"
+        },
+        {
+          "site": "Piccoma",
+          "url": "https://piccoma.com/web/product/5523?etype=episode"
+        },
+        {
+          "site": "Kakao Webtoon",
+          "url": "https://th.kakaowebtoon.com/content/solo_leveling/48"
+        },
+        {
+          "site": "Kakao Webtoon",
+          "url": "https://webtoon.kakao.com/content/나-혼자만-레벨업/2320"
+        },
+        {
+          "site": "Lezhin",
+          "url": "https://www.delitoon.de/detail/dad_4100014"
+        },
+        {
+          "site": "Manta",
+          "url": "https://manta.net/en/series/solo-leveling?seriesId=2729"
+        },
+        {
+          "site": "Yen Press",
+          "url": "https://yenpress.com/series/solo-leveling-comic"
+        },
+        {
+          "site": "Lezhin",
+          "url": "https://www.delitoon.com/detail/daf_4100080"
+        },
+        {
+          "site": "ONO",
+          "url": "https://www.ono.live/webtoon/solo-leveling"
+        },
+        {
+          "site": "WebComics",
+          "url": "https://webcomicsapp.com/comic/Solo-Leveling/6887312562661d31bc3c2952"
+        }
+      ]
+    }
+  }
+}

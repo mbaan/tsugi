@@ -1,0 +1,15 @@
+<div class="modal narrow">
+  <header><h3>Why isn't "{{ work.canonical_title }}" for you?</h3>
+    <button class="icon" onclick="closeOverlay()" title="Close">✕</button></header>
+  <p class="meta">Picked tags become negative signals in future recommendations.</p>
+  <form hx-post="/list/{{ work.id }}?status=discarded">
+    <div class="chips">
+      {% for t in tags %}
+      <label class="chip pick"><input type="checkbox" name="tag_ids" value="{{ t.id }}">
+        {{ t.name }}</label>
+      {% endfor %}
+    </div>
+    <input name="note" placeholder="Optional note">
+    <button class="btn bad">Not for me</button>
+  </form>
+</div>

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="discover">
+  <div id="tuning" hx-get="/tuning" hx-trigger="load, data-changed from:body"></div>
+  <form id="toolbar" class="toolbar" hx-get="/recommendations" hx-target="#results"
+        hx-trigger="change">
+    <label>Sort <select name="sort">
+      <option value="match">Best match</option>
+      <option value="quality">Quality</option>
+      <option value="year">Newest</option>
+      <option value="added">Recently indexed</option>
+      <option value="title">Title</option>
+    </select></label>
+    <label>Type <select name="type">
+      <option value="">All</option>
+      <option value="manga">Manga</option>
+      <option value="manhwa">Manhwa</option>
+      <option value="manhua">Manhua</option>
+    </select></label>
+    <label>Min quality <input name="min_quality" type="number" step="0.5" min="0" max="10"
+      placeholder="gate"></label>
+    <label>Why-chips <select name="chips">
+      <option value="1">on</option>
+      <option value="0">off</option>
+    </select></label>
+  </form>
+  <div id="results" hx-get="/recommendations" hx-include="#toolbar"
+       hx-trigger="load, data-changed from:body"></div>
+</section>
+{% endblock %}

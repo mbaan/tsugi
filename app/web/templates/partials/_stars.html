@@ -1,0 +1,19 @@
+{# Half-step star input: 10 radios (value 1-10), odd = half star. Coloring uses
+   :has() (fine: single-user app on Brave). value may be None. The radio/label
+   stream must stay whitespace-free: each absolute .half label overlays the next
+   glyph at its static inline position, and any text node between them shifts
+   the overlay window onto blank space (renders as a sliver). #}
+{% macro stars(work_id, field, value, compact=false, prefix='') -%}
+<form class="stars{{ ' compact' if compact }}" hx-post="/ratings/{{ work_id }}"
+      hx-trigger="change">
+  <input type="hidden" name="field" value="{{ field }}">
+  {%- for v in range(1, 11) -%}
+  <input type="radio" name="value" value="{{ v }}" id="{{ prefix }}st-{{ work_id }}-{{ field }}-{{ v }}" {{ 'checked' if value == v }}><label for="{{ prefix }}st-{{ work_id }}-{{ field }}-{{ v }}" class="{{ 'half' if v % 2 else 'full' }}" title="{{ v / 2 }}★">★</label>
+  {%- endfor -%}
+  {%- if value %}
+  <button type="button" class="clear" title="Clear rating"
+          hx-post="/ratings/{{ work_id }}"
+          hx-vals='{"field": "{{ field }}", "value": 0}'>✕</button>
+  {%- endif %}
+</form>
+{%- endmacro %}

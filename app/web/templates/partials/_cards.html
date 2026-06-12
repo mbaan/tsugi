@@ -1,0 +1,45 @@
+{% from "partials/_stars.html" import stars %}
+{% if rows %}
+<div class="card-grid">
+  {% for w in rows %}
+  <div class="wcard">
+    <div class="wcard-cover" hx-get="/works/{{ w.id }}" hx-target="#overlay" hx-push-url="true"
+         style="background:{{ w.cover_color or 'var(--surface-2)' }}">
+      <img src="/covers/{{ w.id }}" alt="" loading="lazy">
+      {% if w.seeded %}<span class="wcard-seed" title="A seed">★</span>{% endif %}
+      {% if w.quality is not none %}<span class="badge">{{ '%.1f'|format(w.quality) }}</span>{% endif %}
+    </div>
+    <div class="wcard-body">
+      <div class="wcard-title" title="{{ w.canonical_title }}">{{ w.canonical_title }}</div>
+      <div class="meta">{{ w.type or '?' }} · {{ w.status or '?' }}</div>
+      {% if w.note %}<div class="hint">note: {{ w.note }}</div>{% endif %}
+      {% if list_status == 'discarded' %}
+        {% if reasons.get(w.id) %}
+        <div class="why">{% for n in reasons[w.id] %}<span>{{ n }}</span>{% endfor %}</div>
+        {% endif %}
+        <button class="btn restore" hx-post="/list/{{ w.id }}?status=restore">Restore</button>
+      {% else %}
+      <div class="wcard-acts">
+        {{ stars(w.id, 'overall', w.rating_overall, compact=true) }}
+        <details class="more"><summary title="More actions">⋯</summary>
+          <div class="menu">
+            <button class="btn" hx-post="/seeds/{{ w.id }}">
+              {{ '★ Remove seed' if w.seeded else '☆ Add to seeds' }}</button>
+            <button class="btn" hx-post="/list/{{ w.id }}?status={{ 'read' if w.list_status == 'want' else 'want' }}">
+              Move to {{ 'Read' if w.list_status == 'want' else 'Want' }}</button>
+            <button class="btn" hx-get="/works/{{ w.id }}/discard" hx-target="#overlay">Not for me…</button>
+            <button class="btn bad" hx-post="/list/{{ w.id }}?status=restore">Remove from library</button>
+          </div>
+        </details>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty"><h3>Nothing here yet</h3>
+  <p>{{ {'want': 'Mark titles you intend to read from Discover.',
+         'read': 'Mark titles you finished — ★ the great ones to grow your seeds.',
+         'discarded': 'Titles you reject land here and can be restored.'}[list_status] }}</p></div>
+{% endif %}

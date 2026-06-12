@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Tsugi{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+  <script>document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";</script>
+  <link rel="stylesheet" href="/static/fonts/fonts.css">
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/htmx.min.js"></script>
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-left">
+      <div class="nav-cluster">
+        <a class="brand" href="/"><span class="seal" aria-hidden="true">次</span><span class="word">Tsugi</span></a>
+        <a class="tab {% if view == 'discover' %}active{% endif %}" href="/">Discover</a>
+        <a class="tab {% if view == 'library' %}active{% endif %}" href="/library">Library ·
+          <span hx-get="/nav/count" hx-trigger="load, data-changed from:body">0</span></a>
+      </div>
+      <div class="nav-search">
+        <input name="q" placeholder="Search or add a title…" autocomplete="off"
+               hx-get="/search" hx-trigger="keyup changed delay:300ms" hx-target="#search-results">
+        <div id="search-results" class="dropdown"></div>
+      </div>
+      <button class="icon" hx-get="/settings" hx-target="#overlay" title="Settings">⚙</button>
+    </div>
+    <div class="nav-status">
+      <span id="crawl-status" hx-get="/jobs/active" hx-trigger="load, every 3s"></span>
+      <span id="review-badge" hx-get="/reviews/badge" hx-trigger="load, data-changed from:body"></span>
+    </div>
+  </nav>
+  {% if view in ('discover', 'library') %}
+  <div id="app-banner" hx-get="/banner" hx-trigger="load"></div>
+  {% endif %}
+  <main id="page">{% block content %}{% endblock %}</main>
+  <div id="overlay"></div>
+  <div id="toasts"></div>
+</body>
+</html>

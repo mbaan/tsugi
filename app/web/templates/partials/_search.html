@@ -1,0 +1,24 @@
+{% if local or remote or errors %}
+<div class="search-panel">
+  {% if local %}<div class="group">In your catalog</div>
+  {% for w in local %}
+  <div class="hit" hx-get="/works/{{ w.id }}" hx-target="#overlay" hx-push-url="true">
+    <img src="/covers/{{ w.id }}" alt="" loading="lazy">
+    <span>{{ w.canonical_title }}</span>
+    <button class="icon star" hx-post="/seeds/{{ w.id }}" title="Add to seeds">★</button>
+  </div>
+  {% endfor %}{% endif %}
+  {% if remote %}<div class="group">From sources</div>
+  {% for h in remote %}
+  <form class="hit" hx-post="/index">
+    <input type="hidden" name="source" value="{{ h.source }}">
+    <input type="hidden" name="source_key" value="{{ h.source_key }}">
+    {% if h.cover_url %}<img src="{{ h.cover_url }}" alt="" loading="lazy">
+    {% else %}<span class="thumb-ph"></span>{% endif %}
+    <span>{{ h.title }} <small>{{ h.year or '?' }} · {{ h.source }}</small></span>
+    <button class="btn">Index</button>
+  </form>
+  {% endfor %}{% endif %}
+  {% for source in errors %}<div class="group err">{{ source }} unavailable</div>{% endfor %}
+</div>
+{% endif %}

@@ -1,0 +1,40 @@
+<div class="tuning">
+  <div class="tune-row">
+    <span class="tuning-label"><i>種</i>Seeds</span>
+    {% for s in seeds %}
+    <span class="chip seed">★ {{ s.canonical_title }}
+      {%- if s.pull is not none %} <small class="pull">{{ '%+.2f'|format(s.pull) }}</small>{% endif %}
+      <button hx-post="/seeds/{{ s.id }}" title="Remove seed">✕</button></span>
+    {% endfor %}
+    <button class="chip add" onclick="document.querySelector('.nav-search input').focus()"
+            title="Search a title above to add it as a seed">+ add seed</button>
+  </div>
+
+  {% if suggestions.seed or suggestions.anti %}
+  <div class="tune-row suggest">
+    <span class="tuning-label sub"><i>★</i>Rated picks</span>
+    {% for c in suggestions.seed %}
+    <button class="chip pick" hx-post="/seeds/{{ c.id }}"
+            title="Rated ★{{ '%.1f'|format(c.overall / 2) }} — one click to add as seed">
+      <img src="/covers/{{ c.id }}" alt="" loading="lazy">+ {{ c.canonical_title }}</button>
+    {% endfor %}
+    {% for c in suggestions.anti %}
+    <button class="chip pick anti" hx-post="/seeds/{{ c.id }}"
+            title="Rated ★{{ '%.1f'|format(c.overall / 2) }} — one click to add as anti-seed">
+      <img src="/covers/{{ c.id }}" alt="" loading="lazy">− {{ c.canonical_title }}</button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="tune-row">
+    <span class="tuning-label"><i>札</i>Tropes</span>
+    {% for t in tropes %}
+    <button class="chip trope {{ t.mode }}" hx-post="/tropes/{{ t.tag_id }}"
+            title="require → boost → exclude → off">
+      {{ {'require':'✓','boost':'↑','exclude':'✕'}[t.mode] }} {{ t.name }}</button>
+    {% endfor %}
+    <button class="chip add" hx-get="/tropes/picker" hx-target="#overlay">+ trope</button>
+  </div>
+
+  <span class="hint tune-hint">Seeds steer your recommendations — ★ any title to add it.</span>
+</div>

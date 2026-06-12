@@ -1,0 +1,67 @@
+{# Modal frame is static; only #cr-live polls (hx-select), so the panel frame
+   never re-renders — no flash/jitter on the 3s refresh. #}
+<div class="modal crawler">
+  <button class="icon cr-x" onclick="closeOverlay()" title="Close">✕</button>
+  <div id="cr-live" hx-get="/crawler" hx-trigger="every 3s" hx-select="#cr-live" hx-swap="outerHTML">
+  {#- tone/label come from the Python-resolved phase: the actual activity
+     (acquiring / refreshing / expanding / crawling) or idle / paused / off. -#}
+  {%- if s.phase == 'paused' %}{% set tone = 'paused' %}{% set label = 'paused — resumes ' ~ in_(s.circuit_secs) %}
+  {%- elif s.phase == 'off' %}{% set tone = 'off' %}{% set label = 'off' %}
+  {%- elif s.phase in ('acquiring', 'refreshing', 'expanding', 'crawling') %}{% set tone = 'work' %}{% set label = s.phase %}
+  {%- else %}{% set tone = 'idle' %}{% set label = 'idle' %}{% endif %}
+
+  <header class="cr-head">
+    <div class="cr-id">
+      <span class="cr-pulse cr-{{ tone }}"></span>
+      <h3>Crawler</h3>
+      <span class="cr-status cr-{{ tone }}">{{ label }}</span>
+    </div>
+    <div class="cr-head-acts">
+      <button class="btn accent cr-sprint" hx-post="/refresh/sprint"
+              title="Run the catalog refresh at full speed">⟳ Refresh now</button>
+    </div>
+  </header>
+
+  <div class="cr-tiles">
+    <div class="cr-tile t-acquire"><b>{{ '{:,}'.format(s.acquire) }}</b><span>to acquire</span></div>
+    <div class="cr-tile t-stale"><b>{{ '{:,}'.format(s.refresh) }}</b><span>stale</span></div>
+    <div class="cr-tile t-explore"><b>{{ '{:,}'.format(s.expand) }}</b><span>to expand</span></div>
+  </div>
+
+  <dl class="cr-spec">
+    <div><dt>Base list</dt><dd>{{ '{:,}'.format(s.base_count) }} titles
+      <span class="sep">·</span> pulled {{ ago(s.base_age_secs) }}
+      <span class="sep">·</span> re-pulls {{ in_(s.base_next_secs) }}</dd></div>
+    <div><dt>Catalog</dt><dd>{{ '{:,}'.format(s.indexed) }} indexed
+      <span class="sep">·</span> {{ '{:,}'.format(s.stubs) }} frontier stubs
+      <span class="sep">·</span> last fetch {{ ago(s.last_fetch_secs) }}</dd></div>
+  </dl>
+
+  <div class="cr-section">
+    <div class="cr-section-head"><h4>Activity</h4>
+      {% if s.log_total %}<span class="cr-count">{{ '{:,}'.format(s.log_total) }} logged</span>{% endif %}</div>
+    {% if recent %}
+    <ul class="cr-feed">
+      {% for r in recent %}
+      <li><span class="cr-act a-{{ r.action }}">{{ r.action }}</span>
+        <span class="cr-label">{{ r.label or '—' }}</span>
+        <time>{{ ago(r.age) }}</time></li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="cr-empty">No activity yet — each background action lands here as it happens.</p>{% endif %}
+  </div>
+
+  <div class="cr-section">
+    <div class="cr-section-head"><h4>Depth crawls</h4></div>
+    {% if jobs %}
+    <ul class="cr-jobs">
+      {% for j in jobs %}
+      <li><span class="cr-dot d-{{ j.status }}"></span>
+        <span class="cr-label">{{ j.title }}</span>
+        <span class="cr-job-meta">d{{ j.max_depth }} <span class="sep">·</span> {{ j.fetched }} fetched{% if j.todo %} <span class="sep">·</span> {{ j.todo }} queued{% endif %}{% if j.errors %} <span class="sep">·</span> {{ j.errors }} err{% endif %} <span class="sep">·</span> {{ j.dur }}s</span></li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="cr-empty">No depth crawls yet — open a title and hit ⟳ Crawl.</p>{% endif %}
+  </div>
+  </div>
+</div>

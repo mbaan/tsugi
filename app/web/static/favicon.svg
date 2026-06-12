@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Tsugi brand seal: the nav-bar mark (次 on a tilted red tile with a hard shadow). -->
+  <g transform="rotate(-3 31 30)">
+    <rect x="12" y="11" width="44" height="44" rx="8" fill="#1c1813"/>
+    <rect x="9" y="8" width="44" height="44" rx="8" fill="#d63b22"/>
+    <text x="31" y="31" fill="#fbf2e8" text-anchor="middle" dominant-baseline="central"
+          font-size="29" font-weight="700"
+          font-family="'Zen Kaku Gothic New','Noto Sans CJK JP','Noto Sans JP','Hiragino Sans',sans-serif">次</text>
+  </g>
+</svg>

@@ -1,0 +1,12 @@
+{% if phase == 'crawling' %}<button class="crawl-live" hx-get="/crawler" hx-target="#overlay"
+  title="On-demand depth crawl">⟳ crawling {{ fetched }}/{{ budget }}</button>
+{% elif phase in ('acquiring', 'refreshing', 'expanding') %}<button class="crawl-live" hx-get="/crawler" hx-target="#overlay"
+  title="Background catalog maintenance">⟳ {{ phase }} · {{ '{:,}'.format(todo) }} to go</button>
+{% elif phase == 'paused' %}<button class="crawl-idle" hx-get="/crawler" hx-target="#overlay"
+  title="Backing off after errors">⏸ paused</button>
+{% elif last %}<button class="crawl-done" hx-get="/crawler" hx-target="#overlay"
+  title="Show crawler">✓ crawl {{ last.status }} — {{ last.fetched }} fetched{% if last.errors %}, {{ last.errors }} errors{% endif %}</button>
+{% elif phase == 'off' %}<button class="crawl-idle" hx-get="/crawler" hx-target="#overlay"
+  title="Background refresh is off">◦ refresh off</button>
+{% else %}<button class="crawl-idle" hx-get="/crawler" hx-target="#overlay"
+  title="Crawler idle — click for activity">◦ idle</button>{% endif %}
