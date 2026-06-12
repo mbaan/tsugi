@@ -6,6 +6,9 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 
+# local container instance — ship the .example, not the personalised one
+docker-compose.yml
+
 # local agent config + AI design docs — not shipped publicly
 .claude/
 docs/superpowers/

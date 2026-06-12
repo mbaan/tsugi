@@ -1,0 +1,15 @@
+# Keep the build context small. Read by both podman (.dockerignore fallback)
+# and docker. The Containerfile only COPYs app/ + pyproject.toml + uv.lock, so
+# this is purely a context-size optimisation — it never affects image contents.
+data/
+.venv/
+.git/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.claude/
+docs/
+tests/
+scripts/
+.superpowers/
