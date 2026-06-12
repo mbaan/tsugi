@@ -362,6 +362,10 @@ details.more .menu {
 .wcard-acts { display: flex; gap: .3rem; align-items: center; margin-top: auto; padding-top: .5rem; }
 .wcard-acts .more { margin-left: auto; }
 .wcard-body .restore { margin-top: .5rem; align-self: flex-start; }
+/* an open ⋯ menu must clear sibling cards, which become stacking contexts on
+   hover (transform) and during the rise animation; lift the owning card */
+.wcard:has(.more[open]),
+.rec:has(.more[open]) { position: relative; z-index: 5; }
 
 /* ---------- overlay, modal, slideover ---------- */
 #overlay:not(:empty)::before {
