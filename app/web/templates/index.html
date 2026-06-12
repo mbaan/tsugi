@@ -18,7 +18,7 @@
       <option value="manhua">Manhua</option>
     </select></label>
     <label>Min quality <input name="min_quality" type="number" step="0.5" min="0" max="10"
-      placeholder="gate"></label>
+      value="{{ '%.1f'|format(default_gate) }}" placeholder="gate"></label>
   </form>
   <div id="results" hx-get="/recommendations" hx-include="#toolbar"
        hx-trigger="load, data-changed from:body"></div>

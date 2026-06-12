@@ -80,7 +80,9 @@ def _main_context(conn) -> dict:
 
 @router.get("/")
 async def index(request: Request):
-    return templates.TemplateResponse(request, "index.html", {"view": "discover"})
+    conn = request.app.state.catalog
+    return templates.TemplateResponse(request, "index.html",
+        {"view": "discover", "default_gate": db.get_float(conn, "quality_gate")})
 
 
 @router.get("/tuning")
@@ -184,7 +186,7 @@ async def index_title(request: Request, source: str = Form(), source_key: str = 
 
 
 @router.post("/works/{work_id}/crawl")
-async def crawl(request: Request, work_id: int, depth: int = Form(2)):
+async def crawl(request: Request, work_id: int, depth: int = Form(3)):
     conn = request.app.state.catalog
     job_id = create_job(conn, work_id, max_depth=min(depth, 4))
     task = asyncio.create_task(run_job(conn, request.app.state.sources, job_id))
@@ -427,7 +429,7 @@ async def work_detail(request: Request, work_id: int):
     alt_titles = [r["title"] for r in conn.execute(
         "SELECT DISTINCT title FROM work_titles WHERE work_id=? AND title<>? LIMIT 4",
         (work_id, work["canonical_title"]))]
-    links = conn.execute("SELECT site, url FROM work_links WHERE work_id=?", (work_id,)).fetchall()
+    links = conn.execute("SELECT site, MIN(url) AS url FROM work_links WHERE work_id=? GROUP BY site ORDER BY site", (work_id,)).fetchall()
     tags = conn.execute(
         "SELECT t.id, t.name, AVG(wt.weight) AS weight, tw.mode FROM work_tags wt"
         " JOIN tags t ON t.id=wt.tag_id LEFT JOIN trope_weights tw ON tw.tag_id=t.id"
