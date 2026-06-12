@@ -316,6 +316,32 @@ def test_success_resets_error_counter(catalog):
     assert state.consecutive_errors == 0
 
 
+def test_similarity_indexes_exist(catalog):
+    # status() runs the expand-backlog query on the event loop every /jobs/active
+    # poll; these indexes are what keep it off an O(stubs x similarities) scan.
+    idx = {r["name"] for r in catalog.execute(
+        "SELECT name FROM sqlite_master WHERE type='index'")}
+    assert {"idx_sim_from", "idx_sim_to", "idx_ws_work"} <= idx
+
+
+def test_expand_counts_stubs_in_either_edge_direction(catalog):
+    # a high-voted anilist edge makes the uncatalogued endpoint an expansion
+    # candidate regardless of which end of the edge the stub sits on.
+    hub = make_work(catalog, "Hub")
+    link_source(catalog, hub, "anilist", "1", fetched=True)
+    to_stub = make_work(catalog, "ToStub", is_stub=1)
+    from_stub = make_work(catalog, "FromStub", is_stub=1)
+    weak_stub = make_work(catalog, "WeakStub", is_stub=1)
+    link_source(catalog, to_stub, "anilist", "70", fetched=False)
+    link_source(catalog, from_stub, "anilist", "71", fetched=False)
+    link_source(catalog, weak_stub, "anilist", "72", fetched=False)
+    link_similar(catalog, hub, to_stub, 50)      # stub is the to_work_id
+    link_similar(catalog, from_stub, hub, 50)    # stub is the from_work_id
+    link_similar(catalog, hub, weak_stub, 3)     # below EXPAND_MIN_VOTES → excluded
+    catalog.commit()
+    assert status(catalog, RefreshState(), now=1000.0)["expand"] == 2
+
+
 def test_never_fetched_rows_refresh_before_old_ones(catalog):
     never = make_work(catalog, "Never")
     old = make_work(catalog, "Old")

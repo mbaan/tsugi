@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS work_sources(
     last_fetched_at TEXT,
     UNIQUE(source, source_key)
 );
+CREATE INDEX IF NOT EXISTS idx_ws_work ON work_sources(work_id);
 CREATE TABLE IF NOT EXISTS work_links(
     work_id INTEGER NOT NULL REFERENCES works(id) ON DELETE CASCADE,
     site TEXT NOT NULL,
@@ -76,6 +77,8 @@ CREATE TABLE IF NOT EXISTS similarities(
     votes INTEGER NOT NULL,
     UNIQUE(from_work_id, to_work_id, source)
 );
+CREATE INDEX IF NOT EXISTS idx_sim_from ON similarities(source, votes, from_work_id);
+CREATE INDEX IF NOT EXISTS idx_sim_to ON similarities(source, votes, to_work_id);
 CREATE TABLE IF NOT EXISTS work_relations(
     work_id INTEGER NOT NULL REFERENCES works(id) ON DELETE CASCADE,
     related_work_id INTEGER NOT NULL REFERENCES works(id) ON DELETE CASCADE,
