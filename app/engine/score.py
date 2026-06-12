@@ -54,17 +54,31 @@ def recommend(conn: sqlite3.Connection, limit: int = 50, *, sort: str = "match",
     excl_franchise = db.get_setting(conn, "exclude_seed_franchise") == "1"
     discard_affinity = db.get_float(conn, "discard_affinity")
     discard_tag_weight = db.get_float(conn, "discard_tag_weight")
+    seed_all_read = db.get_setting(conn, "seed_all_read") == "1"
 
     affinities: dict[int, float] = {}
     stored_affinities: dict[int, float] = {}
-    for r in conn.execute(
-        "SELECT s.work_id, s.affinity, rt.overall FROM seeds s"
-        " LEFT JOIN ratings rt ON rt.work_id=s.work_id"
-    ):
-        stored_affinities[r["work_id"]] = r["affinity"]
-        affinities[r["work_id"]] = (
-            rating_affinity(r["overall"]) if r["overall"] is not None else r["affinity"]
+    if seed_all_read:
+        # mutex shortcut: every Read item is a seed at normal strength; a rating
+        # tunes the pull (5★ harder, ≤2★ becomes an anti-seed). Manual seeds ignored.
+        rows = conn.execute(
+            "SELECT ul.work_id, rt.overall FROM user_list ul"
+            " LEFT JOIN ratings rt ON rt.work_id=ul.work_id WHERE ul.status='read'"
         )
+        for r in rows:
+            stored_affinities[r["work_id"]] = 1.0
+            affinities[r["work_id"]] = (
+                rating_affinity(r["overall"]) if r["overall"] is not None else 1.0
+            )
+    else:
+        for r in conn.execute(
+            "SELECT s.work_id, s.affinity, rt.overall FROM seeds s"
+            " LEFT JOIN ratings rt ON rt.work_id=s.work_id"
+        ):
+            stored_affinities[r["work_id"]] = r["affinity"]
+            affinities[r["work_id"]] = (
+                rating_affinity(r["overall"]) if r["overall"] is not None else r["affinity"]
+            )
     seed_titles = {}
     for r in conn.execute(
         "SELECT work_id FROM user_list WHERE status='discarded'"

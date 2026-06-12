@@ -1,3 +1,4 @@
+from app import db
 from app.engine.score import recommend
 from tests.factory import link_similar, link_tag, make_work
 
@@ -256,3 +257,55 @@ def test_anti_seed_does_not_dilute_other_seeds(catalog):
     s2 = seed(catalog, "Hated")  # no similarity edges of its own
     rate(catalog, s2, 4)         # 2★ → anti-seed; must act like a discard
     assert recommend(catalog)[0].score == before
+
+
+def read_item(conn, title="Read", overall=None, **kw):
+    work_id = make_work(conn, title, **kw)
+    conn.execute("INSERT INTO user_list(work_id, status) VALUES(?, 'read')", (work_id,))
+    conn.commit()
+    if overall is not None:
+        rate(conn, work_id, overall)
+    return work_id
+
+
+def test_seed_all_read_pulls_via_read_items(catalog):
+    r = read_item(catalog, "ReadSeed")                 # read, unrated → pulls at 1.0
+    cand = make_work(catalog, "Cand", quality=8.0)
+    link_similar(catalog, r, cand, 1500)
+    db.set_setting(catalog, "seed_all_read", "1")
+    cand_row = next(x for x in recommend(catalog) if x.title == "Cand")
+    assert any("ReadSeed" in w for w in cand_row.why)   # the read item acted as a seed
+    db.set_setting(catalog, "seed_all_read", "0")
+    # off: read item is not a seed, so nothing is credited to it
+    assert not any("ReadSeed" in w for x in recommend(catalog) for w in x.why)
+
+
+def test_seed_all_read_rating_sets_pull_direction(catalog):
+    db.set_setting(catalog, "seed_all_read", "1")
+    loved = read_item(catalog, "Loved", overall=10)     # 5★ → strong pull
+    hated = read_item(catalog, "Hated", overall=2)      # 1★ → anti-seed (push)
+    near_loved = make_work(catalog, "NearLoved", quality=8.0)
+    near_hated = make_work(catalog, "NearHated", quality=8.0)
+    link_similar(catalog, loved, near_loved, 500)
+    link_similar(catalog, hated, near_hated, 500)
+    titles = [x.title for x in recommend(catalog)]
+    assert "NearLoved" in titles       # pulled in by the 5★ read
+    assert "NearHated" not in titles   # pushed out by the 1★ read (anti-seed)
+
+
+def test_seed_all_read_ignores_manual_seeds(catalog):
+    s = seed(catalog, "ManualSeed")
+    cand = make_work(catalog, "Cand", quality=8.0)
+    link_similar(catalog, s, cand, 1500)
+    db.set_setting(catalog, "seed_all_read", "1")       # mutex on, zero read items
+    # manual seed is locked out → it never appears as a receipt
+    assert not any("ManualSeed" in w for x in recommend(catalog) for w in x.why)
+
+
+def test_seed_all_read_excludes_read_items_from_results(catalog):
+    db.set_setting(catalog, "seed_all_read", "1")
+    a = read_item(catalog, "A", overall=10)
+    b = read_item(catalog, "B", overall=10)
+    link_similar(catalog, a, b, 500)
+    titles = [x.title for x in recommend(catalog)]
+    assert "A" not in titles and "B" not in titles
