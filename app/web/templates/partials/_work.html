@@ -12,30 +12,32 @@
     <div class="work-side">
       <img class="cover-lg" src="/covers/{{ work.id }}" alt=""
            style="background:{{ work.cover_color or 'var(--surface-2)' }}">
-      <button class="btn accent" hx-post="/seeds/{{ work.id }}">
-        ★ {{ 'Remove seed' if is_seed else 'Add to seeds' }}</button>
-      <label class="field"><span class="hint">Add to</span>
-        <select name="status" data-work="{{ work.id }}" data-discard-dialog
-                hx-post="/list/{{ work.id }}"
-                hx-trigger="change[event.target.value != 'discarded']">
-          <option value="restore" {{ 'selected' if not list_status }}>—</option>
-          <option value="want" {{ 'selected' if list_status == 'want' }}>Want</option>
-          <option value="read" {{ 'selected' if list_status == 'read' }}>Read</option>
-          <option value="discarded" {{ 'selected' if list_status == 'discarded' }}>Not for me…</option>
-        </select>
-      </label>
-      <div class="rate">
-        <span class="rate-kicker">Your rating{% if rating %} · ★ {{ '%.1f'|format(rating.overall / 2) }}{% endif %}</span>
-        <div class="rate-row"><span>Overall</span>{{ stars(work.id, 'overall', rating.overall if rating else none, prefix='modal-') }}</div>
-        {% if rating %}
-        <div class="rate-row"><span>Art</span>{{ stars(work.id, 'art', rating.art, prefix='modal-') }}</div>
-        <div class="rate-row"><span>Story</span>{{ stars(work.id, 'story', rating.story, prefix='modal-') }}</div>
-        {% endif %}
-      </div>
-      <div class="btn-row">
-        <button class="btn" hx-post="/works/{{ work.id }}/crawl"
-                hx-include="#crawl-depth">⟳ Crawl</button>
-        <label class="hint">depth <input id="crawl-depth" name="depth" value="2"></label>
+      <div class="work-controls">
+        <button class="btn accent" hx-post="/seeds/{{ work.id }}">
+          ★ {{ 'Remove seed' if is_seed else 'Add to seeds' }}</button>
+        <label class="field"><span class="hint">Add to</span>
+          <select name="status" data-work="{{ work.id }}" data-discard-dialog
+                  hx-post="/list/{{ work.id }}"
+                  hx-trigger="change[event.target.value != 'discarded']">
+            <option value="restore" {{ 'selected' if not list_status }}>—</option>
+            <option value="want" {{ 'selected' if list_status == 'want' }}>Want</option>
+            <option value="read" {{ 'selected' if list_status == 'read' }}>Read</option>
+            <option value="discarded" {{ 'selected' if list_status == 'discarded' }}>Not for me…</option>
+          </select>
+        </label>
+        <div class="rate">
+          <span class="rate-kicker">Your rating{% if rating %} · ★ {{ '%.1f'|format(rating.overall / 2) }}{% endif %}</span>
+          <div class="rate-row"><span>Overall</span>{{ stars(work.id, 'overall', rating.overall if rating else none, prefix='modal-') }}</div>
+          {% if rating %}
+          <div class="rate-row"><span>Art</span>{{ stars(work.id, 'art', rating.art, prefix='modal-') }}</div>
+          <div class="rate-row"><span>Story</span>{{ stars(work.id, 'story', rating.story, prefix='modal-') }}</div>
+          {% endif %}
+        </div>
+        <div class="btn-row">
+          <button class="btn" hx-post="/works/{{ work.id }}/crawl"
+                  hx-include="#crawl-depth">⟳ Crawl</button>
+          <label class="hint">depth <input id="crawl-depth" name="depth" value="2"></label>
+        </div>
       </div>
     </div>
     <div class="work-main">

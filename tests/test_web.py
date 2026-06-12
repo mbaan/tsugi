@@ -289,7 +289,9 @@ def test_picker_groups_by_category_and_marks_active(client):
                  (dungeon,))
     conn.commit()
     body = client.get("/tropes/picker").text
-    assert "Setting-Scene" in body and "Dungeon" in body
+    # category "Setting-Scene" renders split into a styled group + subgroup
+    assert 'cat-group">Setting<' in body and 'cat-sub">Scene<' in body
+    assert "Dungeon" in body
     assert "require" in body  # active mode marked
     assert "Bondage" not in body  # adult hidden by default
 

@@ -196,6 +196,9 @@ button.link:hover { text-decoration: underline; }
 
 /* ---------- discover ---------- */
 #page { max-width: 1120px; margin: 0 auto; padding: .8rem 1.2rem 4rem; }
+/* the library is a grid, not a reading column — let it breathe wider so more
+   covers fit per row on desktop; the auto-fill grid still collapses on tablet */
+#page:has(.library) { max-width: 1500px; }
 .tuning { display: flex; flex-direction: column; gap: .5rem; padding: .8rem 0; border-bottom: 1px solid var(--border-2); }
 .tune-row { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; }
 .tuning-label {
@@ -494,12 +497,22 @@ details.more .menu {
   background: radial-gradient(var(--tone) 1px, transparent 1.4px) 0 0 / 6px 6px,
     linear-gradient(180deg, transparent 35%, color-mix(in srgb, var(--surface) 75%, transparent));
 }
+/* the dossier stacks by its OWN width (modal ≈754px on iPad → stays 2-up; only
+   a genuinely narrow container, i.e. a phone, collapses it) — not the viewport */
+.modal.work, .work-page .modal { container: work / inline-size; }
 .work-cols { display: flex; gap: 1.8rem; }
 .work-side { flex-shrink: 0; width: 165px; display: flex; flex-direction: column; gap: .5rem; }
+.work-controls { display: flex; flex-direction: column; gap: .5rem; min-width: 0; }
 .cover-lg {
   width: 100%; height: 224px; object-fit: cover; border-radius: var(--r);
   border: 1.5px solid var(--border); box-shadow: 4px 4px 0 var(--hard);
   background: var(--surface-2);
+}
+@container work (max-width: 560px) {
+  .work-cols { flex-direction: column; }
+  .work-side { flex-direction: row; width: auto; align-items: flex-start; gap: .9rem; }
+  .work-side .cover-lg { width: 124px; height: 176px; flex-shrink: 0; }
+  .work-controls { flex: 1; }
 }
 .btn-row { display: flex; gap: .35rem; align-items: stretch; flex-wrap: wrap; }
 .btn-row .btn { flex: 1; white-space: nowrap; }
@@ -517,6 +530,25 @@ details.more .menu {
 }
 .desc { color: var(--text-2); font-size: .9rem; line-height: 1.6; max-height: 9.5rem; overflow-y: auto; }
 .chips { display: flex; flex-wrap: wrap; gap: .35rem; margin: .4rem 0; }
+
+/* trope-picker category headers: AniList "Group-Subgroup" names, split so the
+   group reads as a stamped vermillion seal and the subgroup trails in muted ink */
+.trope-cat {
+  display: flex; align-items: baseline; gap: .4rem; line-height: 1;
+  margin: 1.15rem 0 .55rem; padding-bottom: .32rem;
+  border-bottom: 2px dotted var(--border-2);
+  font-family: var(--mono); font-size: .66rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .13em;
+}
+.trope-cat:first-child { margin-top: .3rem; }
+.trope-cat .cat-group { position: relative; padding-left: .95rem; color: var(--accent); }
+.trope-cat .cat-group::before {   /* the seal stamp, a nod to the 次 masthead seal */
+  content: ""; position: absolute; left: 0; top: 50%;
+  width: .42rem; height: .42rem; background: var(--accent); border-radius: 1px;
+  transform: translateY(-50%) rotate(-8deg); box-shadow: 1px 1px 0 var(--hard);
+}
+.trope-cat .cat-sub { color: var(--text-2); }
+.trope-cat .cat-sub::before { content: "›"; color: var(--text-3); margin-right: .4rem; font-weight: 700; }
 .similar {
   display: grid; grid-template-columns: repeat(auto-fill, 78px);
   gap: .8rem .5rem; align-items: start;
@@ -655,24 +687,60 @@ body:has(#app-banner) .nav-search { flex: none; width: 330px; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
-/* ---------- responsive (tablet) ---------- */
+/* ---------- responsive ---------- */
+/* TABLET (iPad portrait ≈820 and narrower): the floating kiosk masthead gives
+   way to one solid, connected bar with a full-width search; the shelf shrinks so
+   content rises into view. Desktop (>900) keeps the floating nav untouched. */
 @media (max-width: 900px) {
-  .nav { flex-wrap: wrap; }
   #app-banner { margin-top: 0; }
-  body:has(#app-banner) .nav {
-    height: auto; margin: 0; top: 0; padding: .55rem 1.2rem;
-    background: var(--surface); border-bottom: 2px solid var(--border);
-  }
-  body:has(#app-banner) .nav-left, body:has(#app-banner) .nav-status {
-    height: auto; padding: 0; background: none; border: none;
+  .nav, body:has(#app-banner) .nav {
+    flex-wrap: wrap; row-gap: .55rem; column-gap: .8rem;
+    height: auto; margin: 0; top: 0; padding: .6rem 1.1rem;
+    background: var(--surface); border: none; border-bottom: 2px solid var(--border);
     border-radius: 0; box-shadow: none;
   }
-  body:has(#app-banner) .nav-search { flex: 1; width: auto; }
-  .nav-left { flex-wrap: wrap; }
-  .nav-search { order: 9; max-width: none; flex-basis: 100%; }
-  .work-cols { flex-direction: column; }
-  .work-side { flex-direction: row; width: auto; flex-wrap: wrap; }
-  .work-side .cover-lg { width: 155px; }
-  .rec .acts { flex-wrap: wrap; max-width: 116px; justify-content: flex-end; }
-  .rank { width: 1.8rem; font-size: 1.2rem; }
+  /* flatten nav-left so brand, gear, status and search wrap in one shared row */
+  .nav-left, body:has(#app-banner) .nav-left { display: contents; }
+  body:has(#app-banner) .nav-status {
+    height: auto; padding: 0; background: none; border: none; border-radius: 0; box-shadow: none;
+  }
+  .nav-search, body:has(#app-banner) .nav-search {
+    order: 9; flex: 1 0 100%; max-width: none; width: auto;
+  }
+
+  /* the kiosk shelf eats less vertical room on a portrait tablet */
+  .banner-strip { height: 196px; }
+  .banner-row { left: 14px; bottom: 28px; gap: 9px; }
+  .banner-row img { width: 74px; height: 110px; }
+  .banner-row img:nth-child(odd) { height: 122px; }
+  .banner-row img:nth-child(3n) { height: 104px; }
+  .banner-row img:nth-child(4n+2) { height: 116px; }
+  .kiosk-shelf { bottom: 18px; }
+  .banner-fade { height: 18px; }
+
+  .rank { width: 1.9rem; font-size: 1.25rem; }
+}
+
+/* PHONE: tighten the gutters and let the chart's action cluster wrap compactly */
+@media (max-width: 560px) {
+  #page { padding: .7rem .8rem 3rem; }
+  .nav-cluster { gap: .4rem; }
+  .rec { gap: .6rem; padding-left: .15rem; padding-right: .15rem; }
+  .rec .acts { flex-wrap: wrap; max-width: 6.4rem; justify-content: flex-end; }
+  .tuning-label { min-width: 0; }
+  .banner-strip { height: 168px; }
+}
+
+/* TOUCH: roomier tap targets on coarse pointers (iPad/phone). Gated on the input
+   device, so a desktop mouse is never affected — only fingers get the bigger hits. */
+@media (pointer: coarse) {
+  button.icon { padding: .5rem .6rem; font-size: 1.12rem; }
+  .chip { padding: .3rem .8rem; }
+  .chip button { padding: .12rem .1rem .12rem .35rem; font-size: 1rem; }
+  details.more summary { padding: .5rem .65rem; }
+  .seg a { padding: .52rem 1.05rem; }
+  .rec .acts .btn, .wcard-acts .btn, .acts .btn { padding: .44rem .85rem; }
+  input, select, .toolbar select, .toolbar input { padding: .46rem .6rem; }
+  .stars { font-size: 1.3rem; }
+  .stars.compact { font-size: 1.16rem; }
 }
