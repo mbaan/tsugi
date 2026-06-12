@@ -55,6 +55,16 @@ templates.env.globals.update(ago=ago, in_=in_)
 
 
 def _main_context(conn) -> dict:
+    seed_all = db.get_setting(conn, "seed_all_read") == "1"
+    tropes = conn.execute(
+        "SELECT tw.tag_id, tw.mode, t.name FROM trope_weights tw JOIN tags t ON t.id=tw.tag_id"
+    ).fetchall()
+    if seed_all:
+        read_count = conn.execute(
+            "SELECT COUNT(*) c FROM user_list WHERE status='read'"
+        ).fetchone()["c"]
+        return {"seeds": [], "tropes": tropes, "suggestions": {"seed": [], "anti": []},
+                "seed_all": True, "read_count": read_count}
     seeds = []
     for r in conn.execute(
         "SELECT w.id, w.canonical_title, s.affinity, rt.overall FROM seeds s"
@@ -64,10 +74,8 @@ def _main_context(conn) -> dict:
             "id": r["id"], "canonical_title": r["canonical_title"], "overall": r["overall"],
             "pull": rating_affinity(r["overall"]) if r["overall"] is not None else None,
         })
-    tropes = conn.execute(
-        "SELECT tw.tag_id, tw.mode, t.name FROM trope_weights tw JOIN tags t ON t.id=tw.tag_id"
-    ).fetchall()
-    return {"seeds": seeds, "tropes": tropes, "suggestions": suggest_seeds(conn)}
+    return {"seeds": seeds, "tropes": tropes, "suggestions": suggest_seeds(conn),
+            "seed_all": False, "read_count": 0}
 
 
 @router.get("/")

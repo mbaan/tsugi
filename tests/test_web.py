@@ -368,6 +368,21 @@ def test_tuning_bar_renders_seeds_and_tropes(client):
     assert "Seeds steer your recommendations" in body
 
 
+def test_tuning_seed_all_locks_out_manual_seeds(client):
+    conn = client.app_ref.state.catalog
+    w = make_work(conn, "Solo Leveling")
+    conn.execute("INSERT INTO seeds(work_id, affinity) VALUES(?, 1.0)", (w,))
+    r = make_work(conn, "ReadOne")
+    conn.execute("INSERT INTO user_list(work_id, status) VALUES(?, 'read')", (r,))
+    conn.commit()
+    off = client.get("/tuning").text
+    assert "Solo Leveling" in off and "all read" in off   # chip + toggle affordance
+    db.set_setting(conn, "seed_all_read", "1")
+    on = client.get("/tuning").text
+    assert "Solo Leveling" not in on                       # manual chip locked out
+    assert "Using all 1 Read title" in on                  # status pill with count
+
+
 def test_recommendations_respects_sort_param(client):
     conn = client.app_ref.state.catalog
     s = make_work(conn, "Seed")
