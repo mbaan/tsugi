@@ -83,6 +83,10 @@ def create_app(config: Config | None = None, sources=None) -> FastAPI:
     from app.web.covers import router as covers_router
 
     app.include_router(covers_router)
+    if cfg.sso_enabled:
+        from app.web.auth import setup_auth
+
+        setup_auth(app, cfg)
     return app
 
 
