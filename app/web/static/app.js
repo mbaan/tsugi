@@ -39,6 +39,13 @@ document.addEventListener("click", (e) => {
   }
 });
 
+// closing a work modal does history.back() (see closeOverlay); htmx then restores
+// the cached page and re-fires #app-banner's load trigger. Skip that refetch when
+// the collage is already populated, so it doesn't reshuffle on every modal close.
+document.body.addEventListener("htmx:beforeRequest", (e) => {
+  if (e.target.id === "app-banner" && e.target.childElementCount > 0) e.preventDefault();
+});
+
 // toasts replace alert()
 function toast(message, kind = "error") {
   const el = document.createElement("div");
