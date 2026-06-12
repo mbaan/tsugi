@@ -25,4 +25,10 @@
     ⟳ Crawler activity</button>
   <h4>Merge reviews</h4>
   <div id="reviews" hx-get="/reviews" hx-trigger="load, data-changed from:body"></div>
+  {% if user %}
+  <footer class="settings-account">
+    <span class="hint">Signed in as {{ user.name }}</span>
+    <a class="link" href="/auth/logout">Sign out</a>
+  </footer>
+  {% endif %}
 </div>

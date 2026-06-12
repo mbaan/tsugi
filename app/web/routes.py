@@ -531,9 +531,12 @@ async def resolve_review(request: Request, review_id: int,
 
 @router.get("/settings")
 async def settings_form(request: Request):
+    from app.web.auth import current_user
+
     conn = request.app.state.catalog
     s = {r["key"]: r["value"] for r in conn.execute("SELECT key, value FROM settings")}
-    return templates.TemplateResponse(request, "partials/_settings.html", {"s": s})
+    return templates.TemplateResponse(
+        request, "partials/_settings.html", {"s": s, "user": current_user(request)})
 
 
 @router.post("/settings")

@@ -105,3 +105,10 @@ def test_logout_clears_session(sso_client):
     assert r.status_code == 302
     assert r.headers["location"] == "https://issuer.test/logout"
     assert sso_client.get("/", follow_redirects=False).status_code == 302  # gated again
+
+
+def test_settings_shows_user_and_signout(sso_client):
+    sso_client.get("/auth/oidc/callback", follow_redirects=False)  # log in as Marco
+    body = sso_client.get("/settings").text
+    assert "Marco" in body
+    assert "/auth/logout" in body
