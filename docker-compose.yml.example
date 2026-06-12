@@ -6,6 +6,16 @@ services:
       context: .
       dockerfile: Containerfile
     image: tsugi:latest
+    # Single sign-on (OpenID Connect). On by default — set DISABLE_SSO=1 to turn it
+    # off. Register an OIDC client in your identity provider with redirect URI
+    # https://tsugi.example.com/auth/oidc/callback and scopes: openid profile groups.
+    # environment:
+    #   OIDC_ISSUER: "https://sso.example.com"
+    #   OIDC_CLIENT_ID: "tsugi"
+    #   OIDC_CLIENT_SECRET: "change-me"
+    #   SESSION_SECRET: "change-me"          # e.g. openssl rand -hex 32
+    #   PUBLIC_BASE_URL: "https://tsugi.example.com"
+    #   # DISABLE_SSO: "1"
     ports:
       - "9000:9000"
     volumes:

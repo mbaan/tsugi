@@ -26,6 +26,33 @@ automatically on code changes (otherwise restart it by hand after every edit);
 
     uv run uvicorn app.main:app --reload --port 9000
 
+## Authentication (SSO)
+
+Tsugi can sit behind any OpenID Connect provider. SSO is **on by default**; with it
+enabled but unconfigured, Tsugi refuses to start (fail closed). For local dev, run
+fully open with `DISABLE_SSO=1`:
+
+    DISABLE_SSO=1 uv run python -m app.main
+
+Register an OIDC client in your identity provider with:
+
+- redirect URI: `https://<your-tsugi-host>/auth/oidc/callback`
+  (add `http://localhost:9000/auth/oidc/callback` too if you test locally)
+- scopes: `openid profile groups`
+
+Then configure Tsugi:
+
+| Variable             | Example                       | Notes                              |
+| -------------------- | ----------------------------- | ---------------------------------- |
+| `OIDC_ISSUER`        | `https://sso.example.com`     | provider base URL (discovery)      |
+| `OIDC_CLIENT_ID`     | `tsugi`                       |                                    |
+| `OIDC_CLIENT_SECRET` | —                             | client secret                      |
+| `SESSION_SECRET`     | `openssl rand -hex 32`        | signs the session cookie           |
+| `PUBLIC_BASE_URL`    | `https://tsugi.example.com`   | external origin for the redirect   |
+
+Any user the provider authenticates is admitted; restrict access at the provider if
+needed.
+
 ## Maintenance
 
     uv run pytest                          # offline suite (fixtures)
