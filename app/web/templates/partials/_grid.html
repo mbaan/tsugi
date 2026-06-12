@@ -8,7 +8,7 @@
   <div class="rec-body" hx-get="/works/{{ r.work_id }}" hx-target="#overlay" hx-push-url="true">
     <h3>{{ r.title }}</h3>
     <p class="meta">{{ r.type or '?' }} · {{ r.year or '?' }}</p>
-    {% if chips %}<div class="why">{% for w in r.why %}<span>{{ w }}</span>{% endfor %}</div>{% endif %}
+    <div class="why">{% for w in r.why %}<span>{{ w }}</span>{% endfor %}</div>
   </div>
   <div class="score"><b class="quality">{{ '%.1f'|format(r.quality) }}</b><span>quality</span></div>
   <div class="score"><b>{{ '%.2f'|format(r.score) }}</b><span>match</span></div>

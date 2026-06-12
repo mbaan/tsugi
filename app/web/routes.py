@@ -121,7 +121,7 @@ async def refresh_sprint(request: Request):
 
 @router.get("/recommendations")
 async def recommendations(request: Request, sort: str = "match", type: str = "",
-                    min_quality: str = "", chips: str = "1"):
+                    min_quality: str = ""):
     conn = request.app.state.catalog
     try:
         mq = float(min_quality) if min_quality else None
@@ -139,7 +139,7 @@ async def recommendations(request: Request, sort: str = "match", type: str = "",
             links.setdefault(row["work_id"], []).append(row)
     return templates.TemplateResponse(
         request, "partials/_grid.html",
-        {"results": results, "links": links, "chips": chips != "0", "skipped": skipped,
+        {"results": results, "links": links, "skipped": skipped,
          "gate": mq if mq is not None else db.get_float(conn, "quality_gate")}
     )
 

@@ -395,16 +395,6 @@ def test_recommendations_respects_sort_param(client):
     assert body.index("New Decent") < body.index("Old Gem")
 
 
-def test_recommendations_chips_toggle(client):
-    conn = client.app_ref.state.catalog
-    s = make_work(conn, "Seed")
-    conn.execute("INSERT INTO seeds(work_id, affinity) VALUES(?, 1.0)", (s,))
-    cand = make_work(conn, "ORV", quality=8.6)
-    link_similar(conn, s, cand, 1367)
-    assert "1,367 votes" in client.get("/recommendations").text
-    assert "1,367 votes" not in client.get("/recommendations", params={"chips": "0"}).text
-
-
 def test_search_grouped_with_index_button(client):
     conn = client.app_ref.state.catalog
     make_work(conn, "Solo Leveling")
