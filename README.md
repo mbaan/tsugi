@@ -48,3 +48,11 @@ Deliberately boring and dependency-light, which suits a single-user app:
   Two files: an append-only `archive` (raw API payloads, the source of truth)
   and a derived, rebuildable `catalog`, so schema or parser changes never need a
   re-crawl.
+
+## Design
+
+The UI is *Inkpress* — a manga-zine / newsprint look rather than a generic
+dashboard: two-tone sumi ink on warm paper, a single vermillion (朱) spot
+colour, hard-edged panels, halftone screentone, and offset hard shadows (no
+blur — print is hard-edged). Display type is Dela Gothic One; CJK falls
+through to Noto Sans.
