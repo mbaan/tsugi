@@ -309,3 +309,25 @@ def test_seed_all_read_excludes_read_items_from_results(catalog):
     link_similar(catalog, a, b, 500)
     titles = [x.title for x in recommend(catalog)]
     assert "A" not in titles and "B" not in titles
+
+
+def test_recommend_query_count_is_independent_of_candidate_count(catalog):
+    # N+1 guard: recommend() must not issue a work_tags query per candidate.
+    # Two trope chips are set so the tag-weight load actually runs (and must
+    # stay a single bulk query, not one-per-candidate).
+    s = seed(catalog)
+    tag = link_tag(catalog, s, "Action", 0.5)
+    catalog.execute("INSERT INTO trope_weights(tag_id, mode, weight) VALUES(?, 'boost', 1.0)", (tag,))
+    for i in range(100):
+        cand = make_work(catalog, f"Cand{i}", quality=8.0)
+        link_similar(catalog, s, cand, 100)
+        link_tag(catalog, cand, "Action", 0.5)
+    catalog.commit()
+    count = [0]
+    catalog.set_trace_callback(lambda _sql: count.__setitem__(0, count[0] + 1))
+    try:
+        results = recommend(catalog, limit=200)
+    finally:
+        catalog.set_trace_callback(None)
+    assert len(results) == 100
+    assert count[0] < 30, f"recommend issued {count[0]} statements for 100 candidates (N+1?)"

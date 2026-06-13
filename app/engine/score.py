@@ -2,8 +2,6 @@ import math
 import sqlite3
 from dataclasses import dataclass
 
-from app import db
-
 
 @dataclass(frozen=True)
 class Scored:
@@ -47,16 +45,17 @@ def recommend(conn: sqlite3.Connection, limit: int = 50, *, sort: str = "match",
               with_skipped: bool = False):
     """Top recommendations; with_skipped=True also returns how many works scored
     but sit below the quality tier (so the UI can say what the gate is hiding)."""
-    gate = db.get_float(conn, "quality_gate")
-    w_sim = db.get_float(conn, "w_similarity")
-    w_tropes = db.get_float(conn, "w_tropes")
-    w_quality = db.get_float(conn, "w_quality")
-    floor = db.get_float(conn, "require_floor")
-    show_adult = db.get_setting(conn, "show_adult") == "1"
-    excl_franchise = db.get_setting(conn, "exclude_seed_franchise") == "1"
-    discard_affinity = db.get_float(conn, "discard_affinity")
-    discard_tag_weight = db.get_float(conn, "discard_tag_weight")
-    seed_all_read = db.get_setting(conn, "seed_all_read") == "1"
+    cfg = {r["key"]: r["value"] for r in conn.execute("SELECT key, value FROM settings")}
+    gate = float(cfg["quality_gate"])
+    w_sim = float(cfg["w_similarity"])
+    w_tropes = float(cfg["w_tropes"])
+    w_quality = float(cfg["w_quality"])
+    floor = float(cfg["require_floor"])
+    show_adult = cfg.get("show_adult") == "1"
+    excl_franchise = cfg.get("exclude_seed_franchise") == "1"
+    discard_affinity = float(cfg["discard_affinity"])
+    discard_tag_weight = float(cfg["discard_tag_weight"])
+    seed_all_read = cfg.get("seed_all_read") == "1"
 
     affinities: dict[int, float] = {}
     stored_affinities: dict[int, float] = {}
@@ -168,14 +167,26 @@ def recommend(conn: sqlite3.Connection, limit: int = 50, *, sort: str = "match",
     # stay out of the denominator
     pos_affinity = sum(stored_affinities[k] for k, a in affinities.items() if a > 0) or 1.0
 
+    # Per-candidate tag weights, but only for the tags any filter or score actually
+    # reads (requires/excludes/boosts), bulk-loaded in one query keyed by work. The
+    # old code ran one work_tags query per candidate — an N+1 that cost ~2.5s on the
+    # Pi for thousands of candidates. With no tropes set, relevant_tags is empty and
+    # we skip the query entirely; merged.get() below tolerates the empty dict.
+    relevant_tags = set(requires) | excludes | set(scoring_tags)
+    merged_by_work: dict[int, dict[int, float]] = {}
+    if relevant_tags:
+        ids = ",".join("?" * len(relevant_tags))
+        for r in conn.execute(
+            f"SELECT work_id, tag_id, AVG(weight) mw FROM work_tags"
+            f" WHERE tag_id IN ({ids}) GROUP BY work_id, tag_id", tuple(relevant_tags)):
+            merged_by_work.setdefault(r["work_id"], {})[r["tag_id"]] = r["mw"]
+
     results: list[Scored] = []
     below_gate = 0
     for w in candidates:
         if w["franchise_id"] is not None and w["franchise_id"] in seed_franchises:
             continue
-        merged = {r["tag_id"]: r["mw"] for r in conn.execute(
-            "SELECT tag_id, AVG(weight) mw FROM work_tags WHERE work_id=? GROUP BY tag_id",
-            (w["id"],))}
+        merged = merged_by_work.get(w["id"], {})
         if any(merged.get(t, 0.0) < floor for t in requires):
             continue
         if any(merged.get(t, 0.0) >= floor for t in excludes):

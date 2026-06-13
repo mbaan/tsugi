@@ -206,6 +206,12 @@ def connect(path: Path | str) -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys=ON")
+    # The data dir lives on NFS, where every uncached page read and every commit
+    # fsync is a network round-trip. NORMAL is safe under WAL (a crash can lose the
+    # last transactions but never corrupts), and a 64MB page cache keeps the whole
+    # ~15MB catalog resident so reads stop hitting the network once warm.
+    conn.execute("PRAGMA synchronous=NORMAL")
+    conn.execute("PRAGMA cache_size=-65536")  # 64MB (negative = KiB, not pages)
     return conn
 
 
