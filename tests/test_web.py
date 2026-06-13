@@ -236,6 +236,19 @@ def test_jobs_active_shows_running_totals(client):
     assert "crawling" in body and "34" in body
 
 
+def test_crawl_does_not_duplicate_a_running_job(client):
+    conn = client.app_ref.state.catalog
+    w = make_work(conn, "Seed")
+    conn.execute("INSERT INTO crawl_jobs(seed_work_id, max_depth, budget, status)"
+                 " VALUES(?, 2, 300, 'running')", (w,))
+    conn.commit()
+    before = conn.execute("SELECT COUNT(*) FROM crawl_jobs WHERE seed_work_id=?", (w,)).fetchone()[0]
+    r = client.post(f"/works/{w}/crawl", data={"depth": "2"})
+    assert r.status_code == 204
+    after = conn.execute("SELECT COUNT(*) FROM crawl_jobs WHERE seed_work_id=?", (w,)).fetchone()[0]
+    assert after == before  # already crawling — no second job
+
+
 def test_review_badge(client):
     assert client.get("/reviews/badge").text.strip() == ""
     conn = client.app_ref.state.catalog

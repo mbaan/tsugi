@@ -93,8 +93,15 @@ async def run_job(conn: sqlite3.Connection, sources: Mapping[str, Source], job_i
                 )
         conn.commit()
 
-    conn.execute(
-        "UPDATE crawl_jobs SET status=?, finished_at=datetime('now') WHERE id=?",
-        (status, job_id),
-    )
+    final = conn.execute("SELECT fetched, errors FROM crawl_jobs WHERE id=?", (job_id,)).fetchone()
+    if status == "done" and final["fetched"] == 0 and final["errors"] == 0:
+        # No-op crawl (seed + frontier all already fresh) — don't persist it. Re-crawling
+        # an up-to-date seed otherwise piles "0 fetched · 0s" rows into the dashboard.
+        # Cascade drops the queue rows.
+        conn.execute("DELETE FROM crawl_jobs WHERE id=?", (job_id,))
+    else:
+        conn.execute(
+            "UPDATE crawl_jobs SET status=?, finished_at=datetime('now') WHERE id=?",
+            (status, job_id),
+        )
     conn.commit()

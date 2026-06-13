@@ -180,6 +180,9 @@ async def index_title(request: Request, source: str = Form(), source_key: str = 
 @router.post("/works/{work_id}/crawl")
 async def crawl(request: Request, work_id: int, depth: int = Form(3)):
     conn = request.app.state.catalog
+    if conn.execute("SELECT 1 FROM crawl_jobs WHERE seed_work_id=? AND status='running'",
+                    (work_id,)).fetchone():
+        return changed("crawl-queued")  # already crawling this seed — don't double up
     job_id = create_job(conn, work_id, max_depth=min(depth, 4))
     task = asyncio.create_task(run_job(conn, request.app.state.sources, job_id))
     request.app.state.jobs[job_id] = task

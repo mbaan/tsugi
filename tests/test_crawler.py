@@ -76,6 +76,18 @@ async def test_franchise_members_not_in_frontier(catalog):
     assert src.fetch_calls == []  # only edge is same-franchise
 
 
+async def test_noop_crawl_is_not_persisted(catalog):
+    # re-crawling an already-fresh seed with nothing new to fetch must leave no trace,
+    # so the dashboard doesn't fill up with empty "0 fetched" jobs
+    src = FakeSource({"s": make_payload(source="fake", source_key="s", title="Seed")})
+    seed_id = upsert_payload(catalog, src.payloads["s"])
+    job_id = create_job(catalog, seed_id, max_depth=2)
+    await run_job(catalog, {"fake": src}, job_id)
+    assert src.fetch_calls == []
+    assert catalog.execute("SELECT COUNT(*) FROM crawl_jobs").fetchone()[0] == 0
+    assert catalog.execute("SELECT COUNT(*) FROM crawl_queue").fetchone()[0] == 0  # cascaded
+
+
 async def test_fetch_error_recorded_job_continues(catalog):
     payloads = chain_payloads()
     payloads["s"] = make_payload(source="fake", source_key="s", title="Seed",
