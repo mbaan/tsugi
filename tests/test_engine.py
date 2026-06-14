@@ -382,3 +382,21 @@ def test_recommend_query_count_is_independent_of_candidate_count(catalog):
         catalog.set_trace_callback(None)
     assert len(results) == 100
     assert count[0] < 30, f"recommend issued {count[0]} statements for 100 candidates (N+1?)"
+
+
+def test_rising_flag_recent_strong_yes_old_no(catalog):
+    s = seed(catalog)                                    # factory default year 2020
+    fresh = make_work(catalog, "Fresh", year=2026, quality=8.0)
+    old = make_work(catalog, "Old", year=2012, quality=8.0)
+    link_similar(catalog, s, fresh, 200)
+    link_similar(catalog, s, old, 200)
+    by = {r.title: r for r in recommend(catalog, now=2026.5)}
+    assert by["Fresh"].rising is True       # short window + high velocity
+    assert by["Old"].rising is False        # 8yr window -> not rising
+
+
+def test_rising_requires_enough_votes(catalog):
+    s = seed(catalog)
+    thin = make_work(catalog, "Thin", year=2026, quality=8.0)
+    link_similar(catalog, s, thin, 5)       # below min_votes=10 -> no signal at all
+    assert [r for r in recommend(catalog, now=2026.5) if r.title == "Thin"] == []
