@@ -782,13 +782,49 @@ body:has(#app-banner) .nav-search { flex: none; width: 330px; }
   .rank { width: 1.9rem; font-size: 1.25rem; }
 }
 
-/* PHONE: tighten the gutters and let the chart's action cluster wrap compactly */
+/* PHONE (Pixel-class portrait ≈448 and narrower): a dedicated reflow. The iPad
+   sits at 820 — above this ceiling — so none of these rules reach it. The whole
+   pass lives here (and never in the shared pointer:coarse block) to keep tablet
+   touch sizing untouched. */
 @media (max-width: 560px) {
   #page { padding: .7rem .8rem 3rem; }
+
+  /* masthead: drop the "Tsugi" wordmark to the 次 seal alone — that ~55px is what
+     was crowding the tabs and crawl status off the row. Tighten gaps/padding and
+     shrink the status so the common case rides one row (long phases still wrap). */
+  .nav, body:has(#app-banner) .nav { column-gap: .5rem; padding: .55rem .8rem; }
   .nav-cluster { gap: .4rem; }
-  .rec { gap: .5rem; padding-left: .15rem; padding-right: .15rem; }
+  .brand .word { display: none; }
+  .nav .tab { padding: .26rem .55rem; }
+  .nav-status { gap: .4rem; }
+  /* the crawler's numeric tail folds away on the phone — phase word still signals
+     activity, and the full counts live one tap deep in the crawler console */
+  .crawl-detail { display: none; }
   .tuning-label { min-width: 0; }
   .banner-strip { height: 168px; }
+
+  /* THE CHART: stop the title and the actions competing for one line. The row
+     becomes two stacked bands — [rank · cover · title/meta/seals] above, a
+     full-width action bar below — so titles breathe and every tap target widens. */
+  .rec { flex-wrap: wrap; gap: .55rem .5rem; padding: .7rem .15rem; }
+  .rec-open { flex: 1 0 100%; align-items: flex-start; gap: .6rem; }
+  .rank { width: 1.7rem; font-size: 1.2rem; padding-top: .08rem; }
+  .rank.top { font-size: 1.12rem; padding: .26rem 0; }
+  .rec .cover { width: 60px; height: 84px; }
+  .rec-body h3 { font-size: 1.02rem; }
+
+  /* seals shrink to two inline stamps, top-aligned so the score sits beside the
+     title it scores; the under-labels drop (the number carries the meaning, and
+     the title attr still names each) */
+  .seals { gap: .4rem; align-self: flex-start; }
+  .seal { width: 34px; height: 34px; }
+  .seal::before { inset: 4px; }
+  .seal b { font-size: .66rem; }
+  .seal-cell i { display: none; }
+
+  /* the action segment is now a full-width bar, cells stretched evenly */
+  .status-seg { flex: 1 0 100%; }
+  .status-seg button { flex: 1; padding: .55rem .4rem; }
 }
 
 /* TOUCH: roomier tap targets on coarse pointers (iPad/phone). Gated on the input
