@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS source_raw(
 """
 
 DEFAULT_SETTINGS = {
-    "quality_gate": "7.0",
+    "quality_gate": "7.5",
     "w_similarity": "0.55",
     "w_tropes": "0.30",
     "w_quality": "0.15",

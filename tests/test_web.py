@@ -145,7 +145,7 @@ def test_settings_rejects_malformed_float(client):
     conn = client.app_ref.state.catalog
     r = client.post("/settings", data={"quality_gate": "abc"})
     assert r.status_code == 204
-    assert db.get_float(conn, "quality_gate") == 7.0  # unchanged
+    assert db.get_float(conn, "quality_gate") == 7.5  # unchanged
 
 
 def test_resolve_stale_review_is_noop(client):
@@ -719,9 +719,9 @@ def test_grid_notes_results_hidden_by_quality_gate(client):
     link_similar(conn, s, meh, 500)
     body = client.get("/recommendations").text
     assert "GoodWork" in body and "MehWork" not in body
-    assert "1 more hidden below quality 7.0" in body
+    assert "1 more hidden below rating 7.5" in body
     body = client.get("/recommendations", params={"min_quality": "5"}).text
-    assert "MehWork" in body and "hidden below quality" not in body
+    assert "MehWork" in body and "hidden below rating" not in body
 
 
 def test_library_card_shows_overall_only_art_story_in_dossier(client):

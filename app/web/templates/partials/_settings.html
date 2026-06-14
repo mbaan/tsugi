@@ -7,11 +7,11 @@
       <option value="dark">Dark</option>
     </select></label>
   <form hx-post="/settings">
-    <label class="field">Quality gate <input name="quality_gate" value="{{ s.quality_gate }}"></label>
+    <label class="field">Rating gate <input name="quality_gate" value="{{ s.quality_gate }}"></label>
     <fieldset><legend class="hint">Scoring blend</legend>
       <label class="field">Similarity <input name="w_similarity" value="{{ s.w_similarity }}"></label>
       <label class="field">Tropes <input name="w_tropes" value="{{ s.w_tropes }}"></label>
-      <label class="field">Quality <input name="w_quality" value="{{ s.w_quality }}"></label>
+      <label class="field">Rating <input name="w_quality" value="{{ s.w_quality }}"></label>
     </fieldset>
     <label class="check"><input type="checkbox" name="show_adult" value="1"
       {% if s.show_adult == '1' %}checked{% endif %}> Show adult titles</label>

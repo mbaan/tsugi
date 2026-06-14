@@ -13,7 +13,7 @@ def seed(conn, title="Seed", **kw):
 def test_skipped_counts_scoring_works_below_gate(catalog):
     s = seed(catalog)
     good = make_work(catalog, "Good", quality=8.0)
-    meh = make_work(catalog, "Meh", quality=6.0)      # scores, but under the 7.0 gate
+    meh = make_work(catalog, "Meh", quality=6.0)      # scores, but under the 7.5 gate
     make_work(catalog, "Noise", quality=5.0)           # never scores: no edges, no tags
     link_similar(catalog, s, good, 500)
     link_similar(catalog, s, meh, 500)
@@ -173,7 +173,7 @@ def test_type_filter(catalog):
 def test_min_quality_overrides_gate(catalog):
     s = make_work(catalog, "Seed")
     catalog.execute("INSERT INTO seeds(work_id, affinity) VALUES(?, 1.0)", (s,))
-    low = make_work(catalog, "Low", quality=6.0)  # below default gate 7.0
+    low = make_work(catalog, "Low", quality=6.0)  # below default gate 7.5
     link_similar(catalog, s, low, 50)
     catalog.commit()
     assert "Low" not in [r.title for r in recommend(catalog)]

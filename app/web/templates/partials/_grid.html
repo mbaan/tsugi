@@ -22,8 +22,8 @@
       </div>
       <div class="seal-cell">
         <div class="seal quality" style="--v:{{ '%.3f'|format(r.quality / 10) }}"
-             title="quality {{ '%.1f'|format(r.quality) }} from votes"><b>{{ '%.1f'|format(r.quality) }}</b></div>
-        <i>quality</i>
+             title="rating {{ '%.1f'|format(r.quality) }} from votes"><b>{{ '%.1f'|format(r.quality) }}</b></div>
+        <i>rating</i>
       </div>
     </div>
   </div>
@@ -38,14 +38,14 @@
 </article>
 {% endfor %}
 {% if skipped %}
-<div class="hint gate-note">{{ skipped }} more hidden below quality {{ '%.1f'|format(gate) }} —
-  lower “Min quality” to peek at them.</div>
+<div class="hint gate-note">{{ skipped }} more hidden below rating {{ '%.1f'|format(gate) }} —
+  lower “Min rating” to peek at them.</div>
 {% endif %}
 {% else %}
 <div class="empty"><h3>No recommendations yet</h3>
   {% if skipped %}
-  <p>{{ skipped }} match{{ 'es' if skipped != 1 }} scored but sit below quality
-    {{ '%.1f'|format(gate) }} — lower “Min quality” to see them.</p>
+  <p>{{ skipped }} match{{ 'es' if skipped != 1 }} scored but sit below rating
+    {{ '%.1f'|format(gate) }} — lower “Min rating” to see them.</p>
   {% else %}
   <p>Search a title above, index it, hit ★ to make it a seed, then crawl from its page
     (open it → ⟳ Crawl) to pull in its neighborhood.</p>

@@ -21,10 +21,10 @@ def test_refresh_log_keeps_row_when_work_deleted(catalog):
 
 
 def test_settings_defaults_and_override(catalog):
-    assert db.get_setting(catalog, "quality_gate") == "7.0"
+    assert db.get_setting(catalog, "quality_gate") == "7.5"
     assert db.get_float(catalog, "w_similarity") == 0.55
-    db.set_setting(catalog, "quality_gate", "7.5")
-    assert db.get_float(catalog, "quality_gate") == 7.5
+    db.set_setting(catalog, "quality_gate", "8.0")
+    assert db.get_float(catalog, "quality_gate") == 8.0
 
 
 def test_archive_table_exists(archive_db):
