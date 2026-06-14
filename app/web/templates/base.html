@@ -8,10 +8,10 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
   <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
   <script>document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";</script>
-  <link rel="stylesheet" href="/static/fonts/fonts.css">
-  <link rel="stylesheet" href="/static/app.css">
-  <script src="/static/htmx.min.js"></script>
-  <script src="/static/app.js" defer></script>
+  <link rel="stylesheet" href="{{ asset('fonts/fonts.css') }}">
+  <link rel="stylesheet" href="{{ asset('app.css') }}">
+  <script src="{{ asset('htmx.min.js') }}"></script>
+  <script src="{{ asset('app.js') }}" defer></script>
 </head>
 <body>
   <nav class="nav">

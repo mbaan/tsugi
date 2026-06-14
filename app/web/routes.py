@@ -18,6 +18,21 @@ from app.engine.suggest import suggest_seeds
 router = APIRouter()
 templates = Jinja2Templates(directory=Path(__file__).parent / "templates")
 
+_STATIC_DIR = Path(__file__).parent / "static"
+
+
+def asset_url(path: str) -> str:
+    """Versioned static URL: append the file's mtime so a changed asset gets a
+    fresh URL the browser has never cached — no manual cache-busting needed."""
+    try:
+        version = int((_STATIC_DIR / path).stat().st_mtime)
+    except OSError:
+        version = 0
+    return f"/static/{path}?v={version}"
+
+
+templates.env.globals["asset"] = asset_url
+
 
 def changed(extra: str = "") -> Response:
     """Mutations don't render; regions listening for data-changed re-fetch themselves."""
