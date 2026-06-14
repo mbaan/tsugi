@@ -32,7 +32,7 @@ def test_quality_gate_excludes(catalog):
     assert "Good" in titles and "Trash" not in titles
 
 
-def test_more_votes_rank_higher_with_log_scaling(catalog):
+def test_more_votes_rank_higher(catalog):
     s = seed(catalog)
     big = make_work(catalog, "Big", quality=8.0)
     small = make_work(catalog, "Small", quality=8.0)
@@ -40,8 +40,7 @@ def test_more_votes_rank_higher_with_log_scaling(catalog):
     link_similar(catalog, s, small, 10)
     results = recommend(catalog)
     assert [r.title for r in results[:2]] == ["Big", "Small"]
-    # log scaling: 100x votes is nowhere near 100x score
-    assert results[0].score < results[1].score * 3
+    assert results[0].score > results[1].score    # support drives MATCH, no log cap
 
 
 def test_user_list_and_stubs_never_recommended(catalog):
@@ -309,6 +308,31 @@ def test_seed_all_read_excludes_read_items_from_results(catalog):
     link_similar(catalog, a, b, 500)
     titles = [x.title for x in recommend(catalog)]
     assert "A" not in titles and "B" not in titles
+
+
+def test_noisy_or_preserves_strong_single_seed(catalog):
+    # Two seeds. A title strongly endorsed by ONE must not be diluted by the silent other.
+    s1 = seed(catalog, "S1")
+    s2 = seed(catalog, "S2")
+    both = make_work(catalog, "Both", quality=8.0)
+    one = make_work(catalog, "One", quality=8.0)
+    link_similar(catalog, s1, both, 300)
+    link_similar(catalog, s2, both, 300)
+    link_similar(catalog, s1, one, 900)        # one strong endorsement only
+    by = {r.title: r.score for r in recommend(catalog, now=2026.5)}
+    assert by["Both"] > by["One"]              # breadth still wins at the top
+    assert by["One"] > 0.4                     # strong single endorsement not halved away
+
+
+def test_match_excludes_title_rating(catalog):
+    # Equal support, different rating -> equal MATCH (rating is no longer in the score).
+    s = seed(catalog)
+    hi = make_work(catalog, "HiRated", quality=9.5)
+    lo = make_work(catalog, "LoRated", quality=7.6)
+    link_similar(catalog, s, hi, 200)
+    link_similar(catalog, s, lo, 200)
+    by = {r.title: r.score for r in recommend(catalog, now=2026.5)}
+    assert abs(by["HiRated"] - by["LoRated"]) < 1e-9
 
 
 def test_release_of_combines_year_and_month():

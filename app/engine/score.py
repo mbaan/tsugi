@@ -1,5 +1,4 @@
 import datetime
-import math
 import sqlite3
 from dataclasses import dataclass
 from math import prod
@@ -19,16 +18,7 @@ class Scored:
     first_seen_at: str | None
     score: float
     why: tuple[str, ...]
-
-
-def _p95(values: list[int]) -> float:
-    values = sorted(v for v in values if v > 0)  # downvoted edges carry no signal
-    if not values:
-        return 1.0
-    # ceil, not int(): with few edges the p95 must land on the larger value,
-    # otherwise every edge saturates at strength 1.0
-    idx = min(len(values) - 1, math.ceil(0.95 * (len(values) - 1)))
-    return float(values[idx]) or 1.0
+    rising: bool = False
 
 
 def release_of(year: int | None, month: int | None) -> float | None:
@@ -74,78 +64,71 @@ def rating_affinity(overall: float) -> float:
 
 def recommend(conn: sqlite3.Connection, limit: int = 50, *, sort: str = "match",
               work_type: str | None = None, min_quality: float | None = None,
-              with_skipped: bool = False):
-    """Top recommendations; with_skipped=True also returns how many works scored
-    but sit below the quality tier (so the UI can say what the gate is hiding)."""
+              with_skipped: bool = False, now: float | None = None):
+    """Top recommendations. MATCH = strength of association (vote support + velocity,
+    noisy-OR across seeds); the title's own rating is NOT part of MATCH. with_skipped
+    also returns how many works scored but sit below the quality tier."""
     cfg = {r["key"]: r["value"] for r in conn.execute("SELECT key, value FROM settings")}
     gate = float(cfg["quality_gate"])
     w_sim = float(cfg["w_similarity"])
     w_tropes = float(cfg["w_tropes"])
-    w_quality = float(cfg.get("w_quality", "0.15"))  # transitional: removed in velocity rewrite
+    k_rate = float(cfg["k_rate"])
+    min_votes = int(float(cfg["min_votes"]))
+    window_floor = float(cfg["window_floor"])
+    rising_max_window = float(cfg["rising_max_window"])
+    rising_min_strength = float(cfg["rising_min_strength"])
     floor = float(cfg["require_floor"])
     show_adult = cfg.get("show_adult") == "1"
     excl_franchise = cfg.get("exclude_seed_franchise") == "1"
     discard_affinity = float(cfg["discard_affinity"])
     discard_tag_weight = float(cfg["discard_tag_weight"])
     seed_all_read = cfg.get("seed_all_read") == "1"
+    now = _now_year() if now is None else now
 
     affinities: dict[int, float] = {}
-    stored_affinities: dict[int, float] = {}
     if seed_all_read:
-        # mutex shortcut: every Read item is a seed at normal strength; a rating
-        # tunes the pull (5★ harder, ≤2★ becomes an anti-seed). Manual seeds ignored.
-        rows = conn.execute(
+        # mutex shortcut: every Read item is a seed; a rating tunes the pull.
+        for r in conn.execute(
             "SELECT ul.work_id, rt.overall FROM user_list ul"
             " LEFT JOIN ratings rt ON rt.work_id=ul.work_id WHERE ul.status='read'"
-        )
-        for r in rows:
-            stored_affinities[r["work_id"]] = 1.0
+        ):
             affinities[r["work_id"]] = (
-                rating_affinity(r["overall"]) if r["overall"] is not None else 1.0
-            )
+                rating_affinity(r["overall"]) if r["overall"] is not None else 1.0)
     else:
         for r in conn.execute(
             "SELECT s.work_id, s.affinity, rt.overall FROM seeds s"
             " LEFT JOIN ratings rt ON rt.work_id=s.work_id"
         ):
-            stored_affinities[r["work_id"]] = r["affinity"]
             affinities[r["work_id"]] = (
-                rating_affinity(r["overall"]) if r["overall"] is not None else r["affinity"]
-            )
-    seed_titles = {}
-    for r in conn.execute(
-        "SELECT work_id FROM user_list WHERE status='discarded'"
-    ).fetchall():
+                rating_affinity(r["overall"]) if r["overall"] is not None else r["affinity"])
+    for r in conn.execute("SELECT work_id FROM user_list WHERE status='discarded'").fetchall():
         affinities.setdefault(r["work_id"], discard_affinity)
-        # never read while discard_affinity < 0 (derived gate filters it); kept so a
-        # positive misconfig degrades to dilution instead of a KeyError
-        stored_affinities.setdefault(r["work_id"], discard_affinity)
+
+    seed_titles: dict[int, str] = {}
+    seed_release: dict[int, float | None] = {}
     if affinities:
         ids = ",".join("?" * len(affinities))
-        seed_titles = {r["id"]: r["canonical_title"] for r in conn.execute(
-            f"SELECT id, canonical_title FROM works WHERE id IN ({ids})",
-            tuple(affinities))}
+        for r in conn.execute(
+            f"SELECT id, canonical_title, year, release_month FROM works WHERE id IN ({ids})",
+            tuple(affinities)):
+            seed_titles[r["id"]] = r["canonical_title"]
+            seed_release[r["id"]] = release_of(r["year"], r["release_month"])
 
-    p95s = {r["source"]: _p95([v["votes"] for v in conn.execute(
-        "SELECT votes FROM similarities WHERE source=?", (r["source"],))])
-        for r in conn.execute("SELECT DISTINCT source FROM similarities")}
-
-    # strongest edge per (seed, candidate) across sources and directions
-    edges: dict[tuple[int, int], tuple[float, int]] = {}  # -> (strength, raw_votes)
+    # strongest raw-vote edge per (seed, candidate) across sources and directions
+    edges: dict[tuple[int, int], int] = {}
     if affinities:
         ids = ",".join("?" * len(affinities))
         params = tuple(affinities) * 2
         for r in conn.execute(
-            f"SELECT from_work_id f, to_work_id t, source, votes FROM similarities"
+            f"SELECT from_work_id f, to_work_id t, votes FROM similarities"
             f" WHERE from_work_id IN ({ids}) OR to_work_id IN ({ids})", params,
         ):
             seed_id, cand = (r["f"], r["t"]) if r["f"] in affinities else (r["t"], r["f"])
             if cand in affinities:
                 continue
             votes = max(0, r["votes"])  # AniList rec ratings go negative when downvoted
-            strength = min(1.0, math.log1p(votes) / math.log1p(p95s[r["source"]]))
-            if edges.get((seed_id, cand), (0.0, 0))[0] < strength:
-                edges[(seed_id, cand)] = (strength, votes)
+            if edges.get((seed_id, cand), 0) < votes:
+                edges[(seed_id, cand)] = votes
 
     # trope weights: explicit chips + discard-feedback tags as negatives
     requires: dict[int, float] = {}
@@ -194,16 +177,7 @@ def recommend(conn: sqlite3.Connection, limit: int = 50, *, sort: str = "match",
 
     scoring_tags = {**{t: w for t, w in requires.items()}, **boosts}
     total_trope_weight = sum(abs(w) for w in scoring_tags.values()) or 1.0
-    # normalize by stored mass of seeds currently pulling positive: keeps the
-    # perfect-score boost (sole rated seed) while anti-seeds, like discards,
-    # stay out of the denominator
-    pos_affinity = sum(stored_affinities[k] for k, a in affinities.items() if a > 0) or 1.0
 
-    # Per-candidate tag weights, but only for the tags any filter or score actually
-    # reads (requires/excludes/boosts), bulk-loaded in one query keyed by work. The
-    # old code ran one work_tags query per candidate — an N+1 that cost ~2.5s on the
-    # Pi for thousands of candidates. With no tropes set, relevant_tags is empty and
-    # we skip the query entirely; merged.get() below tolerates the empty dict.
     relevant_tags = set(requires) | excludes | set(scoring_tags)
     merged_by_work: dict[int, dict[int, float]] = {}
     if relevant_tags:
@@ -224,14 +198,29 @@ def recommend(conn: sqlite3.Connection, limit: int = 50, *, sort: str = "match",
         if any(merged.get(t, 0.0) >= floor for t in excludes):
             continue
 
+        cand_release = release_of(w["year"], w["release_month"])
         why: list[str] = []
-        sim = 0.0
+        pos_factors: list[float] = []   # (1 - p) per positive seed, for noisy-OR
+        neg_factors: list[float] = []   # (1 - penalty) per anti-seed
+        rising = False
         for seed_id, affinity in affinities.items():
-            strength, votes = edges.get((seed_id, w["id"]), (0.0, 0))
-            if strength:
-                sim += affinity * strength
-                if affinity > 0:
-                    why.append(f"{votes:,} votes from {seed_titles.get(seed_id, '?')}")
+            votes = edges.get((seed_id, w["id"]), 0)
+            if not votes:
+                continue
+            exp = exposure_years(cand_release, seed_release.get(seed_id), now, window_floor)
+            s = velocity_strength(votes, exp, k_rate, min_votes)
+            if s <= 0:
+                continue
+            if affinity > 0:
+                p = min(1.0, s * affinity)
+                pos_factors.append(1.0 - p)
+                why.append(f"{votes:,} votes from {seed_titles.get(seed_id, '?')}")
+                if exp <= rising_max_window and s >= rising_min_strength:
+                    rising = True
+            else:
+                neg_factors.append(1.0 - min(1.0, s * abs(affinity)))
+        association = ((1.0 - prod(pos_factors)) if pos_factors else 0.0) \
+            * (prod(neg_factors) if neg_factors else 1.0)
 
         trope_score = 0.0
         for tag_id, weight in scoring_tags.items():
@@ -241,10 +230,7 @@ def recommend(conn: sqlite3.Connection, limit: int = 50, *, sort: str = "match",
                 if weight > 0:
                     why.append(f"{tag_names[tag_id]} {mw:.0%}")
 
-        quality_score = (w["quality"] - gate) / (10 - gate)
-        score = (w_sim * sim / pos_affinity
-                 + w_tropes * trope_score / total_trope_weight
-                 + w_quality * quality_score)
+        score = w_sim * association + w_tropes * trope_score / total_trope_weight
         if score <= 0:
             continue
         if w["quality"] < effective_gate:
@@ -253,13 +239,13 @@ def recommend(conn: sqlite3.Connection, limit: int = 50, *, sort: str = "match",
         why.append(f"quality {w['quality']:.1f}")
         results.append(Scored(
             work_id=w["id"], title=w["canonical_title"], type=w["type"], year=w["year"],
-            status=w["status"], chapters=w["chapters"],
-            quality=w["quality"], cover_url=w["cover_url"], cover_color=w["cover_color"],
-            first_seen_at=w["first_seen_at"], score=score, why=tuple(why),
+            status=w["status"], chapters=w["chapters"], quality=w["quality"],
+            cover_url=w["cover_url"], cover_color=w["cover_color"],
+            first_seen_at=w["first_seen_at"], score=score, why=tuple(why), rising=rising,
         ))
 
-    # score picks the top-N; a non-default sort then reorders that page
-    results.sort(key=lambda s: -s.score)
+    # match sort breaks ties by rating (e.g. trope-only browse with no support signal)
+    results.sort(key=lambda s: (-s.score, -(s.quality or 0)))
     results = results[:limit]
     if sort == "quality":
         results.sort(key=lambda s: -(s.quality or 0))
