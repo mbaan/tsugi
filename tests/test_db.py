@@ -22,7 +22,7 @@ def test_refresh_log_keeps_row_when_work_deleted(catalog):
 
 def test_settings_defaults_and_override(catalog):
     assert db.get_float(catalog, "w_similarity") == 0.70
-    assert db.get_float(catalog, "k_rate") == 6.0
+    assert db.get_float(catalog, "k_rate") == 15.0
     assert db.get_float(catalog, "min_votes") == 10
     assert db.get_float(catalog, "window_floor") == 0.5
     db.set_setting(catalog, "w_similarity", "0.4")

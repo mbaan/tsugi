@@ -186,7 +186,7 @@ DEFAULT_SETTINGS = {
     "quality_gate": "7.5",
     "w_similarity": "0.70",
     "w_tropes": "0.30",
-    "k_rate": "6.0",
+    "k_rate": "15.0",
     "min_votes": "10",
     "window_floor": "0.5",
     "rising_max_window": "1.5",
