@@ -89,3 +89,11 @@ def test_upsert_persists_banner_and_color(catalog):
     row = catalog.execute("SELECT banner_url, cover_color FROM works WHERE is_stub=0").fetchone()
     assert row["banner_url"] == "https://img.example/b.jpg"
     assert row["cover_color"] == "#abc123"
+
+
+def test_upsert_persists_release_month(catalog):
+    from app.catalog.normalize import upsert_payload
+    from tests.factory import make_payload
+    wid = upsert_payload(catalog, make_payload(source_key="42", release_month=7))
+    row = catalog.execute("SELECT release_month FROM works WHERE id=?", (wid,)).fetchone()
+    assert row["release_month"] == 7
