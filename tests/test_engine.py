@@ -335,6 +335,24 @@ def test_match_excludes_title_rating(catalog):
     assert abs(by["HiRated"] - by["LoRated"]) < 1e-9
 
 
+def test_high_affinity_seed_does_not_flatten_match(catalog):
+    # A strong seed (affinity 1.5, e.g. a 5-star rating) must not saturate every
+    # well-supported candidate to the same MATCH: support/velocity must still order
+    # them. Regression: p = min(1, s*affinity) clipped them all to 1.0, which
+    # surfaced the rating tiebreak instead of vote support.
+    s = make_work(catalog, "S")
+    catalog.execute("INSERT INTO seeds(work_id, affinity) VALUES(?, 1.5)", (s,))
+    big = make_work(catalog, "Big", quality=7.6)      # more support, lower rating
+    small = make_work(catalog, "Small", quality=8.1)  # less support, higher rating
+    link_similar(catalog, s, big, 800)
+    link_similar(catalog, s, small, 120)
+    catalog.commit()
+    results = recommend(catalog, now=2026.5)
+    by = {r.title: r.score for r in results}
+    assert by["Big"] > by["Small"]                    # support wins, not rating
+    assert [r.title for r in results[:2]] == ["Big", "Small"]
+
+
 def test_release_of_combines_year_and_month():
     from app.engine.score import release_of
     assert release_of(2020, None) == 2020.0

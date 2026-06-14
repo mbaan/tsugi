@@ -211,14 +211,17 @@ def recommend(conn: sqlite3.Connection, limit: int = 50, *, sort: str = "match",
             s = velocity_strength(votes, exp, k_rate, min_votes)
             if s <= 0:
                 continue
+            # Weighted noisy-OR: affinity is the seed's evidence weight, applied as an
+            # exponent on the miss probability (1-s)**affinity. A plain min(1, s*affinity)
+            # clipped strong seeds (affinity>1) to a flat 1.0, collapsing every
+            # well-supported title to the same MATCH and surfacing the rating tiebreak.
             if affinity > 0:
-                p = min(1.0, s * affinity)
-                pos_factors.append(1.0 - p)
+                pos_factors.append((1.0 - s) ** affinity)
                 why.append(f"{votes:,} votes from {seed_titles.get(seed_id, '?')}")
                 if exp <= rising_max_window and s >= rising_min_strength:
                     rising = True
             else:
-                neg_factors.append(1.0 - min(1.0, s * abs(affinity)))
+                neg_factors.append((1.0 - s) ** abs(affinity))
         association = ((1.0 - prod(pos_factors)) if pos_factors else 0.0) \
             * (prod(neg_factors) if neg_factors else 1.0)
 
