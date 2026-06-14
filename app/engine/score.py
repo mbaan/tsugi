@@ -49,7 +49,7 @@ def recommend(conn: sqlite3.Connection, limit: int = 50, *, sort: str = "match",
     gate = float(cfg["quality_gate"])
     w_sim = float(cfg["w_similarity"])
     w_tropes = float(cfg["w_tropes"])
-    w_quality = float(cfg["w_quality"])
+    w_quality = float(cfg.get("w_quality", "0.15"))  # transitional: removed in velocity rewrite
     floor = float(cfg["require_floor"])
     show_adult = cfg.get("show_adult") == "1"
     excl_franchise = cfg.get("exclude_seed_franchise") == "1"
