@@ -1,6 +1,8 @@
+import datetime
 import math
 import sqlite3
 from dataclasses import dataclass
+from math import prod
 
 
 @dataclass(frozen=True)
@@ -27,6 +29,36 @@ def _p95(values: list[int]) -> float:
     # otherwise every edge saturates at strength 1.0
     idx = min(len(values) - 1, math.ceil(0.95 * (len(values) - 1)))
     return float(values[idx]) or 1.0
+
+
+def release_of(year: int | None, month: int | None) -> float | None:
+    """Fractional release year; month 1..12 adds 0..0.917. None year -> None."""
+    if year is None:
+        return None
+    return year + ((month - 1) / 12 if month else 0.0)
+
+
+def exposure_years(cand_release: float | None, seed_release: float | None,
+                   now: float, floor: float) -> float:
+    """Years the seed<->candidate rec could have accrued votes: capped at the seed's
+    age (the rec can't predate the seed) and floored so fresh titles don't divide by ~0.
+    Unknown dates fall back to whichever is known; both unknown -> treated as old."""
+    refs = [r for r in (cand_release, seed_release) if r is not None]
+    base = max(refs) if refs else 0.0
+    return max(floor, now - base)
+
+
+def velocity_strength(votes: int, exposure: float, k_rate: float, min_votes: int) -> float:
+    """Hill confidence curve on votes-per-year; below the evidence floor -> 0."""
+    if votes < min_votes:
+        return 0.0
+    rate = votes / exposure
+    return rate / (rate + k_rate)
+
+
+def _now_year() -> float:
+    today = datetime.date.today()
+    return today.year + (today.timetuple().tm_yday - 1) / 365.0
 
 
 def rating_affinity(overall: float) -> float:

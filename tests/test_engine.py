@@ -311,6 +311,33 @@ def test_seed_all_read_excludes_read_items_from_results(catalog):
     assert "A" not in titles and "B" not in titles
 
 
+def test_release_of_combines_year_and_month():
+    from app.engine.score import release_of
+    assert release_of(2020, None) == 2020.0
+    assert release_of(2020, 1) == 2020.0          # month 1 = start of year
+    assert abs(release_of(2020, 7) - 2020.5) < 1e-9
+    assert release_of(None, 5) is None
+
+
+def test_exposure_capped_at_seed_age_and_floored():
+    from app.engine.score import exposure_years
+    # candidate older than seed -> window is the seed's age, not the candidate's
+    assert exposure_years(2010.0, 2018.0, 2026.0, 0.5) == 8.0
+    # candidate newer than seed -> its own (shorter) window
+    assert exposure_years(2024.0, 2018.0, 2026.0, 0.5) == 2.0
+    # fresh title floored
+    assert exposure_years(2026.0, 2018.0, 2026.0, 0.5) == 0.5
+
+
+def test_velocity_strength_curve_and_guard():
+    from app.engine.score import velocity_strength
+    assert velocity_strength(5, 1.0, 6.0, 10) == 0.0        # below min_votes
+    assert velocity_strength(60, 10.0, 6.0, 10) == 0.5       # rate 6 == K -> 0.5
+    hi = velocity_strength(800, 1.0, 6.0, 10)
+    lo = velocity_strength(60, 1.0, 6.0, 10)
+    assert hi > lo and 0 < lo < hi < 1
+
+
 def test_recommend_query_count_is_independent_of_candidate_count(catalog):
     # N+1 guard: recommend() must not issue a work_tags query per candidate.
     # Two trope chips are set so the tag-weight load actually runs (and must
