@@ -184,9 +184,13 @@ CREATE TABLE IF NOT EXISTS source_raw(
 
 DEFAULT_SETTINGS = {
     "quality_gate": "7.5",
-    "w_similarity": "0.55",
+    "w_similarity": "0.70",
     "w_tropes": "0.30",
-    "w_quality": "0.15",
+    "k_rate": "6.0",
+    "min_votes": "10",
+    "window_floor": "0.5",
+    "rising_max_window": "1.5",
+    "rising_min_strength": "0.6",
     "ttl_days": "14",
     "show_adult": "0",
     "exclude_seed_franchise": "1",
@@ -223,7 +227,8 @@ MIGRATIONS: dict[str, dict[str, str]] = {
         "is_adult": "INTEGER NOT NULL DEFAULT 0",
         "norm_name": "TEXT",
     },
-    "works": {"banner_url": "TEXT", "cover_color": "TEXT", "chapters": "INTEGER"},
+    "works": {"banner_url": "TEXT", "cover_color": "TEXT", "chapters": "INTEGER",
+              "release_month": "INTEGER"},
 }
 
 
