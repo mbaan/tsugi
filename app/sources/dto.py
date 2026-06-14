@@ -45,6 +45,7 @@ class WorkPayload:
     titles: dict[str, tuple[str, ...]] = field(default_factory=dict)
     type: str | None = None
     year: int | None = None
+    release_month: int | None = None
     status: str | None = None
     chapters: int | None = None
     description: str | None = None

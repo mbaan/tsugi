@@ -11,12 +11,16 @@ ORIGIN_TYPE = {"JP": "manga", "KR": "manhwa", "CN": "manhua", "TW": "manhua"}
 MEDIA_QUERY = """
 query ($id: Int, $search: String) {
   Media(id: $id, search: $search, type: MANGA) {
-    id format status chapters countryOfOrigin startDate { year }
-    averageScore popularity favourites isAdult description(asHtml: false)
+    id idMal format status source isLicensed chapters volumes
+    countryOfOrigin hashtag updatedAt
+    startDate { year month day } endDate { year month day }
+    averageScore meanScore popularity favourites trending
+    isAdult description(asHtml: false)
     title { romaji english native } synonyms siteUrl
-    coverImage { large color } bannerImage
+    coverImage { extraLarge large medium color } bannerImage
     genres
     tags { name rank category isMediaSpoiler }
+    rankings { rank type allTime year season context }
     recommendations(sort: RATING_DESC, perPage: 25) {
       nodes { rating mediaRecommendation { id type title { romaji english } } }
     }
@@ -108,6 +112,7 @@ def parse_media(media: dict) -> WorkPayload:
         titles=titles,
         type=ORIGIN_TYPE.get(media.get("countryOfOrigin")),
         year=(media.get("startDate") or {}).get("year"),
+        release_month=(media.get("startDate") or {}).get("month"),
         status=(media.get("status") or "").lower() or None,
         chapters=media.get("chapters"),
         description=media.get("description"),

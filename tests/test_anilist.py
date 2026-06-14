@@ -92,6 +92,17 @@ def test_parse_media_skips_downvoted_recommendations():
     assert all(s.votes > 0 for s in p.similar)
 
 
+def test_parse_media_extracts_release_month():
+    p = parse_media(media_fixture())
+    assert p.release_month == 3
+
+
+def test_parse_media_release_month_none_when_absent():
+    media = media_fixture()
+    media["startDate"] = {"year": 2018}
+    assert parse_media(media).release_month is None
+
+
 def test_browse_top_pages_archives_and_filters_adult(archive_db):
     seen = []
 

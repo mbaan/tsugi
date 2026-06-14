@@ -6,7 +6,9 @@
       "status": "FINISHED",
       "countryOfOrigin": "KR",
       "startDate": {
-        "year": 2018
+        "year": 2018,
+        "month": 3,
+        "day": 4
       },
       "averageScore": 84,
       "popularity": 276605,
