@@ -11,7 +11,8 @@
       <p class="meta">{{ r.type or '?' }} · {{ r.year or '?' }}
         {%- set st = {'finished': ('Complete', 'done'), 'releasing': ('Ongoing', 'live'),
                       'hiatus': ('Hiatus', 'dead'), 'cancelled': ('Cancelled', 'dead')}.get(r.status) -%}
-        {% if st %}<span class="status-tag {{ st[1] }}">{{ st[0] }}{% if r.chapters %} · {{ r.chapters }} ch{% endif %}</span>{% endif %}</p>
+        {% if st %}<span class="status-tag {{ st[1] }}">{{ st[0] }}{% if r.chapters %} · {{ r.chapters }} ch{% endif %}</span>{% endif %}
+        {% if r.rising %}<span class="rising-tag" title="新星 — rising fast: strong, recent support"><span class="spark">✦</span>新星</span>{% endif %}</p>
       <div class="why">{% for w in r.why if not w.lower().startswith('quality') %}<span>{{ w }}</span>{% endfor %}</div>
     </div>
     <div class="seals">

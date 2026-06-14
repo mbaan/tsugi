@@ -27,6 +27,16 @@ def test_grid_shows_scored_work_with_receipts(client):
     assert "1,367 votes" in r.text
 
 
+def test_rising_badge_renders(client):
+    conn = client.app_ref.state.catalog
+    s = make_work(conn, "RBSeed")
+    conn.execute("INSERT INTO seeds(work_id, affinity) VALUES(?, 1.0)", (s,))
+    fresh = make_work(conn, "RBFresh", year=2026, quality=8.0)
+    link_similar(conn, s, fresh, 300)
+    r = client.get("/recommendations")
+    assert "新星" in r.text
+
+
 def test_search_returns_local_hits(client):
     conn = client.app_ref.state.catalog
     make_work(conn, "Solo Leveling")

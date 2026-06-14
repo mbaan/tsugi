@@ -326,6 +326,16 @@ button.link:hover { text-decoration: underline; }
 .status-tag.done { color: var(--good); background: var(--good-bg); border-color: var(--good-border); }
 .status-tag.live { color: var(--info); background: var(--info-bg); border-color: var(--info-border); }
 .status-tag.dead { color: var(--text-3); background: var(--surface-2); border-color: var(--border-2); }
+/* 新星 — a stamped cover-flash in the hot spot colour for fast-rising titles */
+.rising-tag {
+  display: inline-flex; align-items: center; gap: 3px; vertical-align: middle;
+  margin-left: 6px; padding: 2px 6px; white-space: nowrap;
+  font-family: var(--sans); font-weight: 700; font-size: .68rem; line-height: 1;
+  color: var(--on-accent); background: var(--accent);
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  box-shadow: 1.5px 1.5px 0 var(--hard);
+}
+.rising-tag .spark { font-size: .72rem; line-height: 0; }
 
 /* score seals — two hanko-style ink stamps. The conic arc inks up with the
    value so the number and its gauge are one object: vermillion = match,

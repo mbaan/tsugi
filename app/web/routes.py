@@ -583,7 +583,7 @@ async def settings_form(request: Request):
 async def settings_save(request: Request):
     conn = request.app.state.catalog
     form = await request.form()
-    for key in ("quality_gate", "w_similarity", "w_tropes", "w_quality"):
+    for key in ("quality_gate", "w_similarity", "w_tropes"):
         if form.get(key):
             try:  # a stored non-float would 500 every render via db.get_float
                 db.set_setting(conn, key, str(float(form[key])))
